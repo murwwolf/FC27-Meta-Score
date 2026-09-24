@@ -1,0 +1,19 @@
+const players = [
+  { id: 1, name: "Kylian Mbappé", position: "ST", overall: 91, pace: 97, shooting: 89, passing: 78, dribbling: 90, defending: 34, physical: 78, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p231747.png" },
+  { id: 2, name: "Ousmane Dembélé", position: "ST", overall: 90, pace: 91, shooting: 87, passing: 81, dribbling: 90, defending: 55, physical: 74, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p231443.png" },
+  { id: 3, name: "Khvicha Kvaratskhelia", position: "LW", overall: 89, pace: 86, shooting: 84, passing: 82, dribbling: 89, defending: 58, physical: 82, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p247635.png" },
+  { id: 4, name: "Vini Jr.", position: "LW", overall: 89, pace: 93, shooting: 82, passing: 78, dribbling: 88, defending: 33, physical: 72, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p238794.png" },
+  { id: 5, name: "Nuno Mendes", position: "LB", overall: 89, pace: 94, shooting: 76, passing: 79, dribbling: 86, defending: 83, physical: 82, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p252145.png" },
+  { id: 6, name: "Lamine Yamal", position: "RW", overall: 90, pace: 87, shooting: 83, passing: 85, dribbling: 90, defending: 37, physical: 62, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p277643.png" },
+  { id: 7, name: "Jude Bellingham", position: "CAM", overall: 90, pace: 80, shooting: 84, passing: 80, dribbling: 88, defending: 80, physical: 86, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p252371.png" },
+  { id: 8, name: "Erling Haaland", position: "ST", overall: 91, pace: 87, shooting: 91, passing: 69, dribbling: 80, defending: 50, physical: 89, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p239085.png" },
+  { id: 9, name: "Michael Olise", position: "RM", overall: 90, pace: 83, shooting: 79, passing: 87, dribbling: 90, defending: 45, physical: 69, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p247827.png" },
+  { id: 10, name: "Pedri", position: "CM", overall: 90, pace: 77, shooting: 70, passing: 86, dribbling: 91, defending: 74, physical: 76, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p251854.png" },
+  { id: 11, name: "Rodri", position: "CDM", overall: 90, pace: 62, shooting: 76, passing: 83, dribbling: 78, defending: 84, physical: 82, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p231866.png" },
+  { id: 12, name: "Willian Pacho", position: "CB", overall: 89, pace: 80, shooting: 34, passing: 56, dribbling: 71, defending: 88, physical: 86, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p256196.png" },
+  { id: 13, name: "Vitinha", position: "CM", overall: 90, pace: 72, shooting: 80, passing: 85, dribbling: 90, defending: 72, physical: 73, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p255253.png" },
+  { id: 14, name: "Harry Kane", position: "ST", overall: 90, pace: 63, shooting: 93, passing: 81, dribbling: 82, defending: 53, physical: 83, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p202126.png" },
+  { id: 15, name: "Thibaut Courtois", position: "GK", overall: 90, pace: 47, shooting: 24, passing: 30, dribbling: 50, defending: 16, physical: 50, image: "https://cmtracker.fra1.cdn.digitaloceanspaces.com/DB/27/heads/p192119.png" },
+];
+
+export default players;
