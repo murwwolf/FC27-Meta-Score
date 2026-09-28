@@ -1,6 +1,3 @@
-import Papa from "papaparse";
-import csvText from "../data/fc27_players.csv?raw";
-
 const normalizeWorkRate = (value) => {
   const v = String(value || "").trim();
 
@@ -20,11 +17,6 @@ const number = (value, fallback = 0) => {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
 };
-
-const parsed = Papa.parse(csvText, {
-  header: true,
-  skipEmptyLines: true,
-});
 
 // =========================================================
 // MANUALLY ADDED PLAYER NAMES
@@ -134,111 +126,13 @@ const manualNameSet = new Set(
 );
 
 // =========================================================
-// CSV PLAYERS
+// PLAYERS
 // =========================================================
 
-const players = parsed.data
-  .map((row, index) => {
-    const name =
-      row["info.name.knownas"] ||
-      (
-        (row["info.name.firstname"] || "") +
-        " " +
-        (row["info.name.lastname"] || "")
-      ).trim();
-
-    const position = row["primary_position"] || "";
-    const isGK = position === "GK";
-
-    return {
-      id: number(row["info.playerid"], index + 1),
-      name,
-
-      position,
-      alternatePositions: row["other_positions"] || "",
-
-      overall: number(row["info.overallrating"]),
-      potential: number(row["info.potential"]),
-
-      nation: row["info.nation.name"] || "",
-      club: row["info.teams.club_team.name"] || "",
-
-      league: (() => {
-        const leagues = [
-          "LaLiga",
-          "Bundesliga",
-          "LaLiga",
-          "Bundesliga",
-          "LaLiga",
-          "Premier League",
-          "Ligue 1",
-          "Bundesliga",
-          "LaLiga",
-          "Ligue 1",
-          "LaLiga",
-          "Ligue 1",
-          "Ligue 1",
-          "LaLiga",
-          "Ligue 1",
-        ];
-
-        return leagues[index] || row["info.league"] || "";
-      })(),
-
-      pace: isGK
-        ? number(row["card_attrs.div"])
-        : number(row["card_attrs.pac"]),
-
-      shooting: isGK
-        ? number(row["card_attrs.han"])
-        : number(row["card_attrs.sho"]),
-
-      passing: isGK
-        ? number(row["card_attrs.kic"] || row["card_attrs.kick"])
-        : number(row["card_attrs.pas"]),
-
-      dribbling: isGK
-        ? number(row["card_attrs.ref"])
-        : number(row["card_attrs.dri"]),
-
-      defending: isGK
-        ? number(row["card_attrs.spd"])
-        : number(row["card_attrs.def"]),
-
-      physical: isGK
-        ? number(row["card_attrs.pos"])
-        : number(row["card_attrs.phy"]),
-
-      weakFoot: number(row["info.weafoot"]),
-      skillMoves: number(row["info.skillmoves"]),
-      preferredFoot: row["info.preferredfoot"] || "",
-
-      height: number(row["info.height"]),
-      weight: number(row["info.weight"]),
-
-      attackingWorkRate: normalizeWorkRate(
-        row["info.attackingworkrate"]
-      ),
-
-      defensiveWorkRate: normalizeWorkRate(
-        row["info.defensiveworkrate"]
-      ),
-
-      image: row["info.headshot"] || "",
-    };
-  })
-  .filter((player) => {
-    return !manualNameSet.has(player.name.toLowerCase());
-  });
-
-// =========================================================
-// MANUAL PLAYERS
-// =========================================================
-
+const players = [];
 const addPlayer = (player) => {
   players.push(player);
 };
-
 // =========================================================
 // FEDERICO VALVERDE
 // =========================================================
@@ -1430,34 +1324,7 @@ addPlayer({
 // PEDRI
 // =========================================================
 
-addPlayer({
-  id: 251854,
-  name: "Pedri",
-  position: "CM",
-  alternatePositions: "CDM, CAM",
-  overall: 90,
-  potential: 0,
-  nation: "Spain",
-  club: "FC Barcelona",
-  league: "LaLiga",
-  pace: 76,
-  shooting: 75,
-  passing: 89,
-  dribbling: 91,
-  defending: 77,
-  physical: 75,
-  weakFoot: 4,
-  skillMoves: 4,
-  preferredFoot: "Right",
-  height: 174,
-  weight: 60,
-  attackingWorkRate: "High",
-  defensiveWorkRate: "Medium",
-  image:
-    "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-251854.309a1de3fb9a889bf62ff666f2ba4a3fdec1226d3d407c5e51205b876e6b013a.webp",
-  dataVerified: true,
-  imageStatus: "futgg",
-});
+
 
 // =========================================================
 // RAPHINHA
@@ -5561,6 +5428,343 @@ addPlayer({
   imageStatus: "futgg",
 });
 addPlayer({
+  id: 231747,
+  name: "Kylian Mbappé",
+  position: "ST",
+  alternatePositions: "LW",
+  overall: 91,
+  potential: 94,
+  nation: "France",
+  club: "Real Madrid",
+  league: "LaLiga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 96,
+  shooting: 91,
+  passing: 80,
+  dribbling: 92,
+  defending: 29,
+  physical: 76,
+  weakFoot: 4,
+  skillMoves: 5,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-231747.632b0c94cc6d62b4c96fbb4ac5d5c8f31229698bff82e524739915a3ca1291b0.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 238794,
+  name: "Vinícius Júnior",
+  position: "LW",
+  alternatePositions: "ST",
+  overall: 89,
+  potential: 90,
+  nation: "Brazil",
+  club: "Real Madrid",
+  league: "LaLiga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 93,
+  shooting: 85,
+  passing: 80,
+  dribbling: 91,
+  defending: 31,
+  physical: 71,
+  weakFoot: 4,
+  skillMoves: 5,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-238794.d2a13b65ed01817e51f04f9e0bf158c0d26452647f2d0079c6b22becf91b1cea.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 239085,
+  name: "Erling Haaland",
+  position: "ST",
+  alternatePositions: "",
+  overall: 91,
+  potential: 93,
+  nation: "Norway",
+  club: "Manchester City",
+  league: "Premier League",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 87,
+  shooting: 92,
+  passing: 71,
+  dribbling: 80,
+  defending: 47,
+  physical: 89,
+  weakFoot: 3,
+  skillMoves: 3,
+  preferredFoot: "Left",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-239085.c203fafa7e771488402458c0619e8dd55aeabe25d47faebacc7d740549ed5802.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 202126,
+  name: "Harry Kane",
+  position: "ST",
+  alternatePositions: "",
+  overall: 90,
+  potential: 90,
+  nation: "England",
+  club: "FC Bayern München",
+  league: "Bundesliga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 62,
+  shooting: 94,
+  passing: 83,
+  dribbling: 82,
+  defending: 49,
+  physical: 83,
+  weakFoot: 4,
+  skillMoves: 3,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-202126.1382dfabf3f4e8b7ea3b5ef5848119ddd215cd3586dd4c6106aa347ab04edce3.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 247827,
+  name: "Michael Olise",
+  position: "RM",
+  alternatePositions: "RW",
+  overall: 90,
+  potential: 91,
+  nation: "France",
+  club: "FC Bayern München",
+  league: "Bundesliga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 83,
+  shooting: 82,
+  passing: 89,
+  dribbling: 91,
+  defending: 47,
+  physical: 69,
+  weakFoot: 3,
+  skillMoves: 5,
+  preferredFoot: "Left",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-247827.a1a652947862530e1eb096bd29b5bb096d6593ef7f21df48fa2d8a2487b7808e.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 247635,
+  name: "Khvicha Kvaratskhelia",
+  position: "LW",
+  alternatePositions: "RW",
+  overall: 89,
+  potential: 90,
+  nation: "Georgia",
+  club: "Paris Saint-Germain",
+  league: "Ligue 1",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 86,
+  shooting: 85,
+  passing: 84,
+  dribbling: 90,
+  defending: 59,
+  physical: 81,
+  weakFoot: 5,
+  skillMoves: 5,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-247635.f318fecf50e7533df3b3ad03c0ad9adf9bd46fc92fd4e46b4301e0081ede58d3.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 252145,
+  name: "Nuno Mendes",
+  position: "LB",
+  alternatePositions: "LM",
+  overall: 89,
+  potential: 91,
+  nation: "Portugal",
+  club: "Paris Saint-Germain",
+  league: "Ligue 1",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 94,
+  shooting: 77,
+  passing: 80,
+  dribbling: 86,
+  defending: 84,
+  physical: 80,
+  weakFoot: 4,
+  skillMoves: 4,
+  preferredFoot: "Left",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-252145.39da609ef2e524e2c1f31b4b182d0d15663791b427fd72fbfd4b0246827a5935.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 277643,
+  name: "Lamine Yamal",
+  position: "RW",
+  alternatePositions: "RM",
+  overall: 90,
+  potential: 95,
+  nation: "Spain",
+  club: "FC Barcelona",
+  league: "LaLiga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 86,
+  shooting: 84,
+  passing: 87,
+  dribbling: 93,
+  defending: 38,
+  physical: 61,
+  weakFoot: 3,
+  skillMoves: 5,
+  preferredFoot: "Left",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-277643.79eb8666f877e2b9aa027eeb4a3911871d76c627a5439bf4733b842f466a667b.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 231443,
+  name: "Ousmane Dembélé",
+  position: "ST",
+  alternatePositions: "RW,CAM",
+  overall: 90,
+  potential: 92,
+  nation: "France",
+  club: "Paris Saint-Germain",
+  league: "Ligue 1",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 90,
+  shooting: 89,
+  passing: 83,
+  dribbling: 93,
+  defending: 55,
+  physical: 70,
+  weakFoot: 5,
+  skillMoves: 5,
+  preferredFoot: "Left",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-231443.bd4d90d44b84a5b5f20031bc0f33c35d213ded599130cd5418f9c137a3714aaa.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 231866,
+  name: "Rodri",
+  position: "CDM",
+  alternatePositions: "CM",
+  overall: 90,
+  potential: 90,
+  nation: "Spain",
+  club: "FC Barcelona",
+  league: "LaLiga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 62,
+  shooting: 78,
+  passing: 86,
+  dribbling: 81,
+  defending: 85,
+  physical: 81,
+  weakFoot: 4,
+  skillMoves: 3,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-231866.0e5c649a477f0e597a675284645d28418e8364626cfbba5b267a1534e83bf1a8.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 251854,
+  name: "Pedri",
+  position: "CM",
+  alternatePositions: "CDM,CAM",
+  overall: 90,
+  potential: 93,
+  nation: "Spain",
+  club: "FC Barcelona",
+  league: "LaLiga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 76,
+  shooting: 75,
+  passing: 89,
+  dribbling: 91,
+  defending: 77,
+  physical: 75,
+  weakFoot: 4,
+  skillMoves: 4,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-251854.309a1de3fb9a889bf62ff666f2ba4a3fdec1226d3d407c5e51205b876e6b013a.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 255253,
+  name: "Vitinha",
+  position: "CM",
+  alternatePositions: "CDM",
+  overall: 90,
+  potential: 92,
+  nation: "Portugal",
+  club: "Paris Saint-Germain",
+  league: "Ligue 1",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 72,
+  shooting: 81,
+  passing: 88,
+  dribbling: 91,
+  defending: 75,
+  physical: 70,
+  weakFoot: 3,
+  skillMoves: 4,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-255253.fdf88098f47b0f99de6fe60477ac77bdf3f93b8cce4e367b48d69a1e38c2075c.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+
+addPlayer({
+  id: 252371,
+  name: "Jude Bellingham",
+  position: "CAM",
+  alternatePositions: "CM,LM",
+  overall: 90,
+  potential: 93,
+  nation: "England",
+  club: "Real Madrid",
+  league: "LaLiga",
+  cardType: "Base",
+  promoName: "Gold",
+  pace: 79,
+  shooting: 86,
+  passing: 83,
+  dribbling: 88,
+  defending: 79,
+  physical: 85,
+  weakFoot: 4,
+  skillMoves: 4,
+  preferredFoot: "Right",
+  image: "https://game-assets.fut.gg/cdn-cgi/image/quality=85,width=300,format=auto/2027/player-item/27-252371.64989a509c963547fbb40a9c525b19211469a5a6318310ad026338729f31f3ce.webp",
+  dataVerified: true,
+  imageStatus: "futgg",
+});
+addPlayer({
   id: 1,
   name: "Aazim Ishan",
   position: "RB",
@@ -5638,4 +5842,5 @@ addPlayer({
   image: "/players/ivan-dadzie.png",
   dataVerified: true,
 });
+
 export default players;
