@@ -650,7 +650,20 @@ select {
   white-space: nowrap;
   overflow: hidden;
 }
+.nation-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
 
+.nation-display .fi {
+  width: 18px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  overflow: hidden;
+}
 .player-location span {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -878,5 +891,19 @@ footer {
   .player-image {
     height: 255px;
   }
+.nation-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 
+.nation-flag {
+  width: 18px;
+  height: 12px;
+  display: inline-block;
+  background-size: cover;
+  background-position: center;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
 }

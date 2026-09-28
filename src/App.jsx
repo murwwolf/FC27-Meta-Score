@@ -1,7 +1,74 @@
 import { useMemo, useState } from "react";
+import "country-flag-icons/3x2/flags.css";
 import players from "./lib/playerData";
 import { calculateMetaScore, getTier } from "./lib/metaScore";
+const countryCodes = {
+  England: "GB",
+  Scotland: "GB",
+  Wales: "GB",
+  "Northern Ireland": "GB",
 
+  Brazil: "BR",
+  Argentina: "AR",
+  France: "FR",
+  Spain: "ES",
+  Portugal: "PT",
+  Germany: "DE",
+  Italy: "IT",
+  Netherlands: "NL",
+  Belgium: "BE",
+  Croatia: "HR",
+  Serbia: "RS",
+  Norway: "NO",
+  Sweden: "SE",
+  Denmark: "DK",
+  Poland: "PL",
+  Ukraine: "UA",
+  Austria: "AT",
+  Switzerland: "CH",
+  Turkey: "TR",
+  Greece: "GR",
+  Romania: "RO",
+  Hungary: "HU",
+  "Czech Republic": "CZ",
+
+  Morocco: "MA",
+  Algeria: "DZ",
+  Egypt: "EG",
+  Senegal: "SN",
+  Ghana: "GH",
+  Nigeria: "NG",
+  Cameroon: "CM",
+  Mali: "ML",
+  "Ivory Coast": "CI",
+  "Côte d'Ivoire": "CI",
+  Tunisia: "TN",
+  "South Africa": "ZA",
+
+  Colombia: "CO",
+  Uruguay: "UY",
+  Chile: "CL",
+  Ecuador: "EC",
+  Peru: "PE",
+  Paraguay: "PY",
+  Venezuela: "VE",
+
+  USA: "US",
+  Canada: "CA",
+  Mexico: "MX",
+  Japan: "JP",
+  "South Korea": "KR",
+  Korea: "KR",
+  China: "CN",
+  Australia: "AU",
+  India: "IN",
+  "Saudi Arabia": "SA",
+  Qatar: "QA",
+};
+
+function getCountryCode(country) {
+  return countryCodes[country] || "";
+}
 function App() {
   const [page, setPage] = useState("home");
   const [search, setSearch] = useState("");
@@ -13,7 +80,73 @@ function App() {
   const [leagueFilter, setLeagueFilter] = useState("All");
   const [clubFilter, setClubFilter] = useState("All");
   const [nationFilter, setNationFilter] = useState("All");
+const countryCodes = {
+  England: "GB",
+  Scotland: "GB",
+  Wales: "GB",
+  "Northern Ireland": "GB",
 
+  Brazil: "BR",
+  Argentina: "AR",
+  France: "FR",
+  Spain: "ES",
+  Portugal: "PT",
+  Germany: "DE",
+  Italy: "IT",
+  Netherlands: "NL",
+  Belgium: "BE",
+  Croatia: "HR",
+  Serbia: "RS",
+  Norway: "NO",
+  Sweden: "SE",
+  Denmark: "DK",
+  Poland: "PL",
+  Ukraine: "UA",
+  Austria: "AT",
+  Switzerland: "CH",
+  Turkey: "TR",
+  Greece: "GR",
+  Romania: "RO",
+  Hungary: "HU",
+  "Czech Republic": "CZ",
+
+  Morocco: "MA",
+  Algeria: "DZ",
+  Egypt: "EG",
+  Senegal: "SN",
+  Ghana: "GH",
+  Nigeria: "NG",
+  Cameroon: "CM",
+  Mali: "ML",
+  "Ivory Coast": "CI",
+  "Côte d'Ivoire": "CI",
+  Tunisia: "TN",
+  "South Africa": "ZA",
+
+  Colombia: "CO",
+  Uruguay: "UY",
+  Chile: "CL",
+  Ecuador: "EC",
+  Peru: "PE",
+  Paraguay: "PY",
+  Venezuela: "VE",
+
+  USA: "US",
+  Canada: "CA",
+  Mexico: "MX",
+  Japan: "JP",
+  "South Korea": "KR",
+  Korea: "KR",
+  China: "CN",
+  Australia: "AU",
+  India: "IN",
+  "Saudi Arabia": "SA",
+  Qatar: "QA",
+};
+
+function getCountryCode(country) {
+  return countryCodes[country] || "";
+}
   const [sortBy, setSortBy] = useState("meta-desc");
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [comparePlayers, setComparePlayers] = useState([]);
@@ -534,8 +667,15 @@ function PlayerCard({
         </div>
 
         <div className="player-location">
-          <span>{player.nation}</span>
+          <span className="nation-display">
+            <span
+              className={`fi fi-${getCountryCode(player.nation).toLowerCase()} nation-flag`}
+            />
+            <span>{player.nation}</span>
+          </span>
+
           <span className="dot">•</span>
+
           <span>{player.league}</span>
         </div>
 
