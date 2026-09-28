@@ -7,75 +7,11 @@ import PlayerCard from "./components/PlayerCard";
 import PlayersPage from "./components/PlayersPage";
 import RankingsPage from "./components/RankingsPage";
 import PlayerDetails from "./components/PlayerDetails";
-import CompareSelector from "./components/CompareSelector";
-import Comparison from "./components/Comparison";
 import ComparePage from "./components/ComparePage";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 import { calculateMetaScore, getTier } from "./lib/meta/metaScore";
-
-const countryCodes = {
-  England: "GB",
-  Scotland: "GB",
-  Wales: "GB",
-  "Northern Ireland": "GB",
-  Brazil: "BR",
-  Argentina: "AR",
-  France: "FR",
-  Spain: "ES",
-  Portugal: "PT",
-  Germany: "DE",
-  Italy: "IT",
-  Netherlands: "NL",
-  Belgium: "BE",
-  Croatia: "HR",
-  Serbia: "RS",
-  Norway: "NO",
-  Sweden: "SE",
-  Denmark: "DK",
-  Poland: "PL",
-  Ukraine: "UA",
-  Austria: "AT",
-  Switzerland: "CH",
-  Turkey: "TR",
-  Greece: "GR",
-  Romania: "RO",
-  Hungary: "HU",
-  "Czech Republic": "CZ",
-  Morocco: "MA",
-  Algeria: "DZ",
-  Egypt: "EG",
-  Senegal: "SN",
-  Ghana: "GH",
-  Nigeria: "NG",
-  Cameroon: "CM",
-  Mali: "ML",
-  "Ivory Coast": "CI",
-  "Côte d'Ivoire": "CI",
-  Tunisia: "TN",
-  "South Africa": "ZA",
-  Colombia: "CO",
-  Uruguay: "UY",
-  Chile: "CL",
-  Ecuador: "EC",
-  Peru: "PE",
-  Paraguay: "PY",
-  Venezuela: "VE",
-  USA: "US",
-  Canada: "CA",
-  Mexico: "MX",
-  Japan: "JP",
-  "South Korea": "KR",
-  Korea: "KR",
-  China: "CN",
-  Australia: "AU",
-  India: "IN",
-  "Saudi Arabia": "SA",
-  Qatar: "QA",
-};
-
-function getCountryCode(country) {
-  return countryCodes[country] || "";
-}
 
 function App() {
   const [page, setPage] = useState("home");
@@ -348,12 +284,6 @@ function App() {
     });
   }
 
-  const navItems = [
-    ["home", "HOME"],
-    ["players", "PLAYERS"],
-    ["rankings", "RANKINGS"],
-    ["compare", "COMPARE"],
-  ];
 
   return (
     <div className="app">
@@ -363,39 +293,14 @@ function App() {
 
       <div className="red-glow red-glow-two" />
 
-      <nav className="navbar">
-        <button
-          className="brand"
-          onClick={goHome}
-          type="button"
-        >
-          <span className="brand-fc">FC27</span>
-
-          <span className="brand-meta">META</span>
-        </button>
-
-        <div className="nav-links">
-          {navItems.map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className={page === value ? "active" : ""}
-              onClick={() => {
-                setPage(value);
-                setSelectedPlayer(null);
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="nav-status">
-          <span className="status-dot" />
-
-          LIVE DATABASE
-        </div>
-      </nav>
+      <Navbar
+        page={page}
+        setPage={(value) => {
+          setPage(value);
+          setSelectedPlayer(null);
+        }}
+        onHome={goHome}
+      />
 
       {page === "home" && (
         <main>
@@ -552,35 +457,20 @@ function App() {
         />
       )}
 
-      <footer>
-        <div className="footer-brand">
-          <span className="brand-fc">FC27</span>{" "}
-          <span className="brand-meta">META SCORE</span>
-        </div>
-
-        <span>REAL PLAYER DATA • FC27</span>
-      </footer>
+      <Footer />
     </div>
   );
 }
 
-/* =========================
-   PLAYER CARD
-========================= */
-
-/* =========================
-   PLAYERS PAGE
-========================= */
-
-/* =========================
-   RANKINGS
-========================= */
-
-/* =========================
-   COMPARE PAGE
-========================= */
-
 export default App;
+
+
+
+
+
+
+
+
 
 
 
