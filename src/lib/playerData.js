@@ -5621,7 +5621,7 @@ addPlayer({
   potential: 0,
   nation: "Ghana",
   club: "FC Barcelona",
-  league: "la Liga",
+  league: "LaLiga",
   pace: 88,
   shooting: 83,
   passing: 82,
@@ -5635,7 +5635,7 @@ addPlayer({
   weight: 50,
   attackingWorkRate: "Medium",
   defensiveWorkRate: "High",
-  image: "",
+  image: "/players/ivan-dadzie.png",
   dataVerified: true,
 });
 export default players;
