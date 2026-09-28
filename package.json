@@ -14,7 +14,6 @@
     "@capacitor/cli": "^8.5.2",
     "@capacitor/core": "^8.5.2",
     "country-flag-icons": "^1.6.20",
-    "papaparse": "^5.7.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
