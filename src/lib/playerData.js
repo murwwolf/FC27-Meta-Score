@@ -5561,7 +5561,7 @@ addPlayer({
   imageStatus: "futgg",
 });
 addPlayer({
-  id: 0,
+  id: 1,
   name: "Aazim Ishan",
   position: "RB",
   alternatePositions: "LB,CM",
@@ -5583,7 +5583,33 @@ addPlayer({
   weight: 58,
   attackingWorkRate: "Medium",
   defensiveWorkRate: "High",
-  image: "/players/aazim-ishan.png",
+ image: "/players/aazim-ishan.png",
+  dataVerified: true,
+});
+addPlayer({
+  id: 2,
+  name: "Caleb Cardozo",
+  position: "CDM",
+  alternatePositions: "CB,LB,LM",
+  overall: 85,
+  potential: 0,
+  nation: "England",
+  club: "Manchester United",
+  league: "Premier League",
+  pace: 81,
+  shooting: 86,
+  passing: 85,
+  dribbling: 83,
+  defending: 81,
+  physical: 85,
+  weakFoot: 1,
+  skillMoves: 3,
+  preferredFoot: "Right",
+  height: 154,
+  weight: 58,
+  attackingWorkRate: "Medium",
+  defensiveWorkRate: "High",
+  image: "",
   dataVerified: true,
 });
 export default players;
