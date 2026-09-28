@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 * {
   box-sizing: border-box;
@@ -133,9 +133,11 @@ select {
   gap: 38px;
 }
 
-.nav-links a {
+.nav-links button {
   color: #777;
-  text-decoration: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -143,16 +145,16 @@ select {
   transition: 0.2s;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
+.nav-links button:hover,
+.nav-links button.active {
   color: #ffffff;
 }
 
-.nav-links a.active {
+.nav-links button.active {
   position: relative;
 }
 
-.nav-links a.active::after {
+.nav-links button.active::after {
   content: '';
   position: absolute;
   height: 2px;
@@ -907,3 +909,4 @@ footer {
   flex-shrink: 0;
 }
 }
+
