@@ -5569,7 +5569,7 @@ addPlayer({
   potential: 0,
   nation: "England",
   club: "Real Madrid",
-  league: "La Liga",
+  league: "LaLiga",
   pace: 88,
   shooting: 82,
   passing: 83,
