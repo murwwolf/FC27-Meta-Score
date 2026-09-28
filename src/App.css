@@ -244,37 +244,59 @@ select {
    FILTERS
 ========================= */
 
+/* =========================
+   FILTERS
+========================= */
+
 .filters {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 18px;
+  position: relative;
+  display: flex;
+  justify-content: center;
   max-width: 850px;
   margin: auto;
 }
 
+.filters::before {
+  content: '';
+  position: absolute;
+  inset: -35px 10%;
+  background: rgba(180, 0, 0, 0.12);
+  filter: blur(45px);
+  pointer-events: none;
+}
+
 .filter-box {
-  height: 58px;
+  height: 62px;
 
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 
-  border-radius: 8px;
+  border-radius: 10px;
 
   display: flex;
   align-items: center;
 
-  transition: 0.25s;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+
+  position: relative;
+  z-index: 1;
 }
 
 .filter-box:hover,
 .filter-box:focus-within {
-  border-color: rgba(255, 215, 0, 0.6);
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 215, 0, 0.65);
   box-shadow:
-    0 0 25px rgba(255, 215, 0, 0.06);
+    0 0 0 1px rgba(255, 215, 0, 0.08),
+    0 0 30px rgba(255, 215, 0, 0.08);
 }
 
 .search-box {
-  padding: 0 18px;
+  width: 100%;
+  padding: 0 22px;
 }
 
 .filter-icon {
@@ -293,7 +315,7 @@ select {
   outline: none;
 
   color: #ffffff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -310,8 +332,6 @@ select {
   background: #111;
   color: white;
 }
-
-
 /* =========================
    PLAYER SECTION
 ========================= */
@@ -909,4 +929,5 @@ footer {
   flex-shrink: 0;
 }
 }
+
 
