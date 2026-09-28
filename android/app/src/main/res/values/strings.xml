@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FC27 META</string>
+    <string name="title_activity_main">FC27 META</string>
+    <string name="package_name">com.fc27meta.app</string>
+    <string name="custom_url_scheme">com.fc27meta.app</string>
+</resources>

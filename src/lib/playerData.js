@@ -5560,5 +5560,30 @@ addPlayer({
   dataVerified: true,
   imageStatus: "futgg",
 });
-
+addPlayer({
+  id: 0,
+  name: "Aazim Ishan",
+  position: "RB",
+  alternatePositions: "LB,CM",
+  overall: 84,
+  potential: 0,
+  nation: "England",
+  club: "Real Madrid",
+  league: "La Liga",
+  pace: 88,
+  shooting: 82,
+  passing: 83,
+  dribbling: 83,
+  defending: 85,
+  physical: 84,
+  weakFoot: 1,
+  skillMoves: 3,
+  preferredFoot: "Right",
+  height: 154,
+  weight: 58,
+  attackingWorkRate: "Medium",
+  defensiveWorkRate: "High",
+  image: "/players/aazim-ishan.png",
+  dataVerified: true,
+});
 export default players;
