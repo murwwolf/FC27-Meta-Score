@@ -8,6 +8,9 @@ function PlayerDetails({
   onCompare,
 }) {
   const isGK = player.position === "GK";
+  const listValue = (value) => Array.isArray(value) ? value.join(", ") || "Not listed" : value || "Not listed";
+  const playStyles = player.playStyles || player.playstyles;
+  const playStylesPlus = player.playStylesPlus || player.playstylesPlus || player.playStylePlus;
 
   const attributes = isGK
     ? [
@@ -112,7 +115,7 @@ function PlayerDetails({
           </button>
         </div>
 
-        <div className="profile-meta-card">
+        <div className="profile-meta-card" data-meta-tier={player.tier}>
           <div className="profile-meta-label">
             META SCORE
           </div>
@@ -120,6 +123,8 @@ function PlayerDetails({
           <div className="profile-meta-number">
             {player.metaScore}
           </div>
+
+          <div className="profile-score-max">/100</div>
 
           <div className="profile-meta-tier">
             {player.tier} TIER
@@ -141,7 +146,10 @@ function PlayerDetails({
           </div>
         </div>
 
-        <MetaBreakdown player={player} />
+        <details className="meta-explainer">
+          <summary>HOW IS THIS CALCULATED? <span>VIEW POSITION WEIGHTS AND SCORE MODIFIERS</span></summary>
+          <MetaBreakdown player={player} />
+        </details>
 
         <div className="profile-section-heading">
           <span>02</span>
@@ -202,6 +210,12 @@ function PlayerDetails({
             value={`${player.height || 0} cm`}
           />
 
+          <ProfileInfo label="BODY TYPE" value={player.bodyType || "Not listed"} />
+
+          <ProfileInfo label="PLAYSTYLES" value={listValue(playStyles)} />
+
+          <ProfileInfo label="PLAYSTYLES+" value={listValue(playStylesPlus)} />
+
           <ProfileInfo
             label="WEIGHT"
             value={`${player.weight || 0} kg`}
@@ -215,6 +229,16 @@ function PlayerDetails({
           <ProfileInfo
             label="DEFENSIVE WORK RATE"
             value={player.defensiveWorkRate || "N/A"}
+          />
+
+          <ProfileInfo
+            label="CARD TYPE"
+            value={player.cardType || player.promoName || "Base"}
+          />
+
+          <ProfileInfo
+            label="PROMO INFORMATION"
+            value={player.promoName || player.promo || "Not listed"}
           />
         </div>
 

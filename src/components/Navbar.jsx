@@ -22,7 +22,8 @@
           <button
             key={value}
             type="button"
-            className={page === value ? "active" : ""}
+            className={page === value || (page === "player" && value === "players") ? "active" : ""}
+            aria-current={page === value || (page === "player" && value === "players") ? "page" : undefined}
             onClick={() => {
               setPage(value);
             }}

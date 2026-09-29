@@ -20,12 +20,14 @@ function getCountryCode(country) {
   return countryCodes[country] || "";
 }
 
-function PlayerCard({ player, onOpen, onCompare }) {
+function PlayerCard({ player, onOpen, onCompare, rank }) {
   const isGK = player.position === "GK";
   const countryCode = getCountryCode(player.nation);
+  const cardType = player.cardType || player.promoName || "Base";
 
   return (
-    <article className="player-card" onClick={() => onOpen(player)}>
+    <article className={`player-card${rank <= 3 ? ` rank-top-${rank}` : ""}`} data-meta-tier={player.tier} onClick={() => onOpen(player)}>
+      {rank ? <div className="player-rank">#{rank}</div> : null}
       <div className="card-top">
         <div className="rating">
           <span>OVR</span>
@@ -78,6 +80,11 @@ function PlayerCard({ player, onOpen, onCompare }) {
         </div>
 
         <div className="club">{player.club}</div>
+
+        <div className="card-type-line">
+          <span>{cardType}</span>
+          {player.promoName && player.promoName !== cardType ? <span>{player.promoName}</span> : null}
+        </div>
 
         <div className="stats-title">BASE ATTRIBUTES</div>
 

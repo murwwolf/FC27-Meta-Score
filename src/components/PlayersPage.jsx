@@ -14,6 +14,11 @@ function PlayersPage({
   setClubFilter,
   nationFilter,
   setNationFilter,
+  cardTypeFilter,
+  setCardTypeFilter,
+  cardTypes,
+  minRating,
+  setMinRating,
   sortBy,
   setSortBy,
   positions,
@@ -24,8 +29,6 @@ function PlayersPage({
   onCompare,
   onClear,
 }) {
-  const hasSearched = search.trim().length > 0;
-
   return (
     <main className="players-section">
       <div className="hero-top">
@@ -49,11 +52,11 @@ function PlayersPage({
 
         <div className="database-counter">
           <span className="counter-number">
-            {hasSearched ? players.length : "—"}
+            {players.length}
           </span>
 
           <span className="counter-text">
-            {hasSearched ? "PLAYERS" : "SEARCH"}
+            PLAYERS
           </span>
         </div>
 
@@ -96,6 +99,15 @@ function PlayersPage({
         </div>
 
         <div className="filter-box">
+          <select value={minRating} onChange={(event) => setMinRating(event.target.value)} aria-label="Minimum overall">
+            <option value="All">Any Overall</option>
+            {[90, 85, 80, 75, 70].map((rating) => (
+              <option key={rating} value={rating}>{rating}+ Overall</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-box">
           <select
             value={tier}
             onChange={(event) =>
@@ -108,6 +120,14 @@ function PlayersPage({
             <option value="B">B Tier</option>
             <option value="C">C Tier</option>
             <option value="D">D Tier</option>
+          </select>
+        </div>
+
+        <div className="filter-box">
+          <select value={cardTypeFilter} onChange={(event) => setCardTypeFilter(event.target.value)} aria-label="Card type">
+            {cardTypes.map((item) => (
+              <option key={item} value={item}>{item === "All" ? "All Card Types" : item}</option>
+            ))}
           </select>
         </div>
 
@@ -193,45 +213,34 @@ function PlayersPage({
               Name — Z to A
             </option>
 
-            <option value="pace-desc">
-              Pace — High to Low
+            <option value="pac-desc">
+              PAC — High to Low
             </option>
 
-            <option value="shooting-desc">
-              Shooting — High to Low
+            <option value="sho-desc">
+              SHO — High to Low
             </option>
 
-            <option value="passing-desc">
-              Passing — High to Low
+            <option value="pas-desc">
+              PAS — High to Low
             </option>
 
-            <option value="dribbling-desc">
-              Dribbling — High to Low
+            <option value="dri-desc">
+              DRI — High to Low
             </option>
 
-            <option value="defending-desc">
-              Defending — High to Low
+            <option value="def-desc">
+              DEF — High to Low
             </option>
 
-            <option value="physical-desc">
-              Physical — High to Low
+            <option value="phy-desc">
+              PHY — High to Low
             </option>
           </select>
         </div>
       </div>
 
-      {!hasSearched ? (
-        <div className="empty-state">
-          <div className="empty-symbol">⌕</div>
-
-          <h3>Search the FC27 database</h3>
-
-          <p>
-            Search for a player to view their FC27 META
-            card and detailed stats.
-          </p>
-        </div>
-      ) : players.length === 0 ? (
+      {players.length === 0 ? (
         <div className="empty-state">
           <div className="empty-symbol">×</div>
 

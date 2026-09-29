@@ -401,6 +401,22 @@ const getPositionScore = (player) => {
   return calculateGenericScore(player);
 };
 
+export const getPositionWeights = (player) => {
+  const position = String(player?.position || "").toUpperCase();
+
+  if (position === "GK") {
+    return { Diving: 0.28, Reflexes: 0.28, Positioning: 0.19, Handling: 0.17, Kicking: 0.08 };
+  }
+  if (ATTACKERS.includes(position)) return { Shooting: 0.32, Pace: 0.24, Dribbling: 0.20, Physical: 0.14, Passing: 0.10 };
+  if (WIDE_ATTACKERS.includes(position)) return { Dribbling: 0.28, Pace: 0.26, Shooting: 0.20, Passing: 0.16, Physical: 0.10 };
+  if (ATTACKING_MIDS.includes(position)) return { Passing: 0.28, Dribbling: 0.27, Shooting: 0.19, Pace: 0.14, Physical: 0.07, Defending: 0.05 };
+  if (CENTRAL_MIDS.includes(position)) return { Passing: 0.25, Dribbling: 0.21, Defending: 0.18, Physical: 0.15, Pace: 0.12, Shooting: 0.09 };
+  if (DEFENSIVE_MIDS.includes(position)) return { Defending: 0.31, Passing: 0.25, Physical: 0.19, Dribbling: 0.12, Pace: 0.09, Shooting: 0.04 };
+  if (FULLBACKS.includes(position)) return { Defending: 0.27, Pace: 0.25, Passing: 0.18, Dribbling: 0.16, Physical: 0.10, Shooting: 0.04 };
+  if (DEFENDERS.includes(position)) return { Defending: 0.40, Physical: 0.25, Pace: 0.18, Dribbling: 0.08, Passing: 0.07, Shooting: 0.02 };
+  return { Pace: 0.17, Shooting: 0.17, Passing: 0.17, Dribbling: 0.17, Defending: 0.16, Physical: 0.16 };
+};
+
 // ============================================================
 // GAMEPLAY MODIFIERS
 // ============================================================
@@ -463,7 +479,7 @@ const getWorkRateBonus = (player) => {
 // POSITION-SPECIFIC GAMEPLAY BONUS
 // ============================================================
 
-const getGameplayBonus = (player) => {
+export const getGameplayBonus = (player) => {
   const position = String(player.position || "").toUpperCase();
 
   let bonus = 0;
@@ -511,7 +527,7 @@ const getGameplayBonus = (player) => {
 // HEIGHT / PHYSICAL CONTEXT
 // ============================================================
 
-const getContextBonus = (player) => {
+export const getContextBonus = (player) => {
   const position = String(player.position || "").toUpperCase();
   const height = Number(player.height);
 

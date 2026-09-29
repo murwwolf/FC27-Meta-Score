@@ -4,6 +4,10 @@
   onOpen,
   onSwap,
 }) {
+  const formatStyles = (player, keys) => {
+    const styles = keys.map((key) => player[key]).find(Boolean);
+    return Array.isArray(styles) ? styles.join(", ") || "Not listed" : styles || "Not listed";
+  };
   const bothGoalkeepers =
     first.position === "GK" &&
     second.position === "GK";
@@ -123,6 +127,12 @@
       ))}
 
       <div className="comparison-extra">
+        <ComparisonExtra label="POSITION" firstValue={first.position} secondValue={second.position} />
+        <ComparisonExtra label="CLUB" firstValue={first.club || "N/A"} secondValue={second.club || "N/A"} />
+        <ComparisonExtra label="LEAGUE" firstValue={first.league || "N/A"} secondValue={second.league || "N/A"} />
+        <ComparisonExtra label="NATION" firstValue={first.nation || "N/A"} secondValue={second.nation || "N/A"} />
+        <ComparisonExtra label="PLAYSTYLES" firstValue={formatStyles(first, ["playStyles", "playstyles"])} secondValue={formatStyles(second, ["playStyles", "playstyles"])} />
+        <ComparisonExtra label="PLAYSTYLES+" firstValue={formatStyles(first, ["playStylesPlus", "playstylesPlus", "playStylePlus"])} secondValue={formatStyles(second, ["playStylesPlus", "playstylesPlus", "playStylePlus"])} />
         <ComparisonExtra
           label="PREFERRED FOOT"
           firstValue={first.preferredFoot || "N/A"}
@@ -320,15 +330,17 @@ function ComparisonExtra({
   firstValue,
   secondValue,
 }) {
+  const differs = String(firstValue) !== String(secondValue);
+
   return (
     <div className="comparison-extra-card">
       <span>{label}</span>
 
-      <strong>{firstValue}</strong>
+      <strong className={differs ? "comparison-extra-value different" : "comparison-extra-value"}>{firstValue}</strong>
 
       <span>VS</span>
 
-      <strong>{secondValue}</strong>
+      <strong className={differs ? "comparison-extra-value different" : "comparison-extra-value"}>{secondValue}</strong>
     </div>
   );
 }
