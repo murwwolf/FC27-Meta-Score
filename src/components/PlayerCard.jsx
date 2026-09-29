@@ -1,17 +1,20 @@
 import Stat from "./Stat";
 
 const countryCodes = {
-  England:"GB", Scotland:"GB", Wales:"GB", "Northern Ireland":"GB",
+  England:"GB-ENG", Scotland:"GB-SCT", Wales:"GB-WLS", "Northern Ireland":"GB-NIR",
   Brazil:"BR", Argentina:"AR", France:"FR", Spain:"ES", Portugal:"PT",
   Germany:"DE", Italy:"IT", Netherlands:"NL", Belgium:"BE", Croatia:"HR",
   Serbia:"RS", Norway:"NO", Sweden:"SE", Denmark:"DK", Poland:"PL",
+  "DR Congo":"CD", Georgia:"GE", Guinea:"GN", "New Zealand":"NZ",
+  "Republic of Ireland":"IE", Slovenia:"SI", Türkiye:"TR",
+  "TÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¼rkiye":"TR",
   Ukraine:"UA", Austria:"AT", Switzerland:"CH", Turkey:"TR", Greece:"GR",
   Romania:"RO", Hungary:"HU", "Czech Republic":"CZ", Morocco:"MA",
   Algeria:"DZ", Egypt:"EG", Senegal:"SN", Ghana:"GH", Nigeria:"NG",
   Cameroon:"CM", Mali:"ML", "Ivory Coast":"CI", "C�te d'Ivoire":"CI",
   Tunisia:"TN", "South Africa":"ZA", Colombia:"CO", Uruguay:"UY",
   Chile:"CL", Ecuador:"EC", Peru:"PE", Paraguay:"PY", Venezuela:"VE",
-  USA:"US", Canada:"CA", Mexico:"MX", Japan:"JP", "South Korea":"KR",
+  USA:"US", "United States":"US", Canada:"CA", Mexico:"MX", Japan:"JP", "South Korea":"KR",
   Korea:"KR", China:"CN", Australia:"AU", India:"IN", "Saudi Arabia":"SA",
   Qatar:"QA",
 };
