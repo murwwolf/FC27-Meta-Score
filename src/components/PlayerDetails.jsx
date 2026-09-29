@@ -1,4 +1,5 @@
-﻿import MetaBreakdown from "./MetaBreakdown";
+﻿import { useState } from "react";
+import MetaBreakdown from "./MetaBreakdown";
 import ProfileStat from "./ProfileStat";
 import ProfileInfo from "./ProfileInfo";
 
@@ -7,6 +8,7 @@ function PlayerDetails({
   onBack,
   onCompare,
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
   const isGK = player.position === "GK";
   const listValue = (value) => Array.isArray(value) ? value.join(", ") || "Not listed" : value || "Not listed";
   const playStyles = player.playStyles || player.playstyles;
@@ -62,11 +64,12 @@ function PlayerDetails({
 
             <div className="fut-card-frame"></div>
 
-            {player.image ? (
+            {player.image && !imageFailed ? (
               <img
                 src={player.image}
                 alt={player.name}
                 className="fut-player-cutout"
+                onError={() => setImageFailed(true)}
               />
             ) : (
               <div className="profile-image-placeholder">

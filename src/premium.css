@@ -158,6 +158,68 @@ body { min-width: 320px; background: var(--fc-bg); }
 .empty-state { border-radius: 7px; border-color: rgba(255, 255, 255, 0.15); background: rgba(17, 19, 23, 0.75); }
 footer { max-width: 1380px; border-color: var(--fc-line); }
 
+:where(button, input, select, summary):focus-visible {
+  outline: 2px solid var(--fc-gold);
+  outline-offset: 3px;
+}
+
+.nav-links button,
+.clear-button,
+.reset-button,
+.profile-compare-button,
+.compare-selector button {
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.player-card { isolation: isolate; }
+.player-card::before { z-index: 1; }
+.card-top, .player-image-area, .player-info { position: relative; z-index: 2; }
+.player-image-area { min-height: 250px; }
+.player-image { object-position: center bottom; }
+.image-placeholder {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 116px;
+  aspect-ratio: 1;
+  place-items: center;
+  margin-bottom: 42px;
+  padding: 0;
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, rgba(180, 19, 34, 0.38), rgba(12, 13, 15, 0.94) 72%);
+  color: rgba(255, 215, 0, 0.82);
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: 54px;
+  font-weight: 800;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35), inset 0 0 24px rgba(255, 215, 0, 0.06);
+}
+.meta-score { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.42), inset 0 1px rgba(255, 255, 255, 0.08); }
+.meta-score strong { text-shadow: 0 0 18px rgba(255, 215, 0, 0.18); }
+.player-rank { min-width: 36px; border: 1px solid rgba(0, 0, 0, 0.22); }
+.ranking-toolbar { border-left: 2px solid rgba(255, 215, 0, 0.58); }
+.ranking-tabs button.active { box-shadow: inset 0 -2px var(--fc-gold); }
+.profile-meta-card { border-color: rgba(255, 215, 0, 0.28); box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.07); }
+.profile-meta-number { color: var(--fc-gold); text-shadow: 0 0 28px rgba(255, 215, 0, 0.18); }
+.profile-image-placeholder {
+  display: grid;
+  width: 68%;
+  aspect-ratio: 1;
+  place-items: center;
+  align-self: center;
+  margin: auto;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, rgba(180, 19, 34, 0.42), rgba(12, 13, 15, 0.92) 72%);
+  color: rgba(255, 215, 0, 0.86);
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(52px, 7vw, 88px);
+  font-weight: 800;
+}
+.comparison-area { border-top: 2px solid rgba(255, 215, 0, 0.38); }
+.comparison-center-vs { color: var(--fc-gold); border-color: rgba(255, 215, 0, 0.3); }
+.empty-state { padding: clamp(28px, 5vw, 56px) 20px; }
+
 @media (max-width: 1000px) {
   .players-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .home-hero { min-height: 440px; }
@@ -168,6 +230,13 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
 }
 
 @media (max-width: 700px) {
+  .player-image-area { min-height: 0; }
+  .image-placeholder { width: 104px; margin-bottom: 38px; font-size: 48px; }
+  .player-profile-content { padding-inline: 0; }
+  .profile-meta-card { min-width: 0; }
+  .ranking-toolbar { padding: 8px; }
+  .compare-selector { padding: 14px; }
+  .comparison-area { border-top-width: 1px; }
   .navbar { min-height: 66px; height: auto; padding: 10px 15px 0; flex-wrap: wrap; gap: 4px 10px; }
   .brand-fc, .brand-meta { font-size: 24px; }
   .nav-status { font-size: 8px; }

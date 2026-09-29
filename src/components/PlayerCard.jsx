@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Stat from "./Stat";
 
 const countryCodes = {
@@ -24,6 +25,7 @@ function getCountryCode(country) {
 }
 
 function PlayerCard({ player, onOpen, onCompare, rank }) {
+  const [imageFailed, setImageFailed] = useState(false);
   const isGK = player.position === "GK";
   const countryCode = getCountryCode(player.nation);
   const cardType = player.cardType || player.promoName || "Base";
@@ -44,11 +46,12 @@ function PlayerCard({ player, onOpen, onCompare, rank }) {
 
       <div className="player-image-area"><div className="image-glow" />
 
-        {player.image ? (
+        {player.image && !imageFailed ? (
           <img
             className="player-image"
             src={player.image}
             alt={player.name}
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <div className="image-placeholder">
