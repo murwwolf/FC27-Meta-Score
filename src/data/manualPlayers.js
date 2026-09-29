@@ -1,13 +1,13 @@
-﻿const manualPlayerNames = [
+const manualPlayerNames = [
   "Pedri",
   "Raphinha",
   "Frenkie de Jong",
-  "Jo�o Cancelo",
-  "Joan García",
-  "Pau Cubarsí",
-  "Fermín",
-  "Eric García",
-  "Jules Koundé",
+  "JoÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o Cancelo",
+  "Joan GarcÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a",
+  "Pau CubarsÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­",
+  "FermÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­n",
+  "Eric GarcÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a",
+  "Jules KoundÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©",
   "Gavi",
   "Balde",
   "Federico Valverde",
@@ -18,59 +18,59 @@
   "Virgil van Dijk",
   "Achraf Hakimi",
   "Lionel Messi",
-  "Jo�o Neves",
+  "JoÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o Neves",
   "Alexander Isak",
-  "Bruno Guimar�es",
-  "Viktor Gyökeres",
+  "Bruno GuimarÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£es",
+  "Viktor GyÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¶keres",
   "Antoine Semenyo",
   "Cristiano Ronaldo",
   "Joshua Kimmich",
   "Jamal Musiala",
   "Bukayo Saka",
-  "Julián Alvarez",
+  "JuliÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡n Alvarez",
   "Jan Oblak",
   "Thibaut Courtois",
   "Dominik Szoboszlai",
   "William Saliba",
-  "Arda Güler",
+  "Arda GÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¼ler",
   "Yan Diomande",
   "Bernardo Silva",
-  "Ibrahima Konaté",
+  "Ibrahima KonatÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©",
   "Rodrygo",
-  "Aurélien Tchouaméni",
-  "??der Milit�o",
+  "AurÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©lien TchouamÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©ni",
+  "ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°der MilitÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o",
   "Trent Alexander-Arnold",
   "Denzel Dumfries",
-  "Antonio Rüdiger",
-  "Álvaro Carreras",
+  "Antonio RÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¼diger",
+  "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âlvaro Carreras",
   "Dean Huijsen",
   "Eduardo Camavinga",
-  "Brahim Díaz",
+  "Brahim DÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­az",
   "Jonathan Tah",
-  "Luis Díaz",
+  "Luis DÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­az",
   "Dayot Upamecano",
   "Konrad Laimer",
   "Alisson",
   "Florian Wirtz",
-  "Hugo Ekitiké",
+  "Hugo EkitikÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©",
   "Ryan Gravenberch",
   "Bradley Barcola",
   "Marquinhos",
-  "Fabián Ruiz",
-  "Désiré Doué",
-  "Iñigo Martínez",
-  "Jo�o F�lix",
+  "FabiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡n Ruiz",
+  "DÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©sirÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© DouÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©",
+  "IÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±igo MartÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­nez",
+  "JoÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o FÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©lix",
   "Kingsley Coman",
   "Mohamed Simakan",
   "Rodrigo De Paul",
   "Casemiro",
-  "Rúben Dias",
-  "Enzo Fernández",
+  "RÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºben Dias",
+  "Enzo FernÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ndez",
   "Rayan Cherki",
-  "Joško Gvardiol",
+  "JoÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ko Gvardiol",
   "Marc Guehi",
   "Phil Foden",
-  "Jérémy Doku",
+  "JÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©my Doku",
   "Youri Tielemans",
   "Matheus Cunha",
   "Bryan Mbeumo",
@@ -78,22 +78,22 @@
   "Alphonso Davies",
   "David Raya",
   "Declan Rice",
-  "Martin �~degaard",
+  "Martin ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½~degaard",
   "Eberechi Eze",
-  "Jurriën Timber",
+  "JurriÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â«n Timber",
   "Marcos Llorente",
   "Grimaldo",
-  "Alexander Sørloth",
+  "Alexander SÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¸rloth",
   "Alexis Mac Allister",
   "Giorgi Mamardashvili",
-  "Luis Suárez",
-  "Germán Berterame",
+  "Luis SuÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡rez",
+  "GermÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡n Berterame",
   "Dani Olmo",
   "Karim Adeyemi",
-  "Moisés Caicedo",
+  "MoisÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©s Caicedo",
   "Cole Palmer",
   "Reece James",
-  "Jo�o Pedro",
+  "JoÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o Pedro",
   "Maxence Lacroix",
 ];
 
@@ -374,12 +374,12 @@ addPlayer({
 });
 
 // =========================================================
-// JO�fO NEVES
+// JOÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½fO NEVES
 // =========================================================
 
 addPlayer({
   id: 272834,
-  name: "Jo�o Neves",
+  name: "JoÃ£o Neves",
   position: "CM",
   alternatePositions: "CDM",
   overall: 89,
@@ -440,12 +440,12 @@ addPlayer({
 });
 
 // =========================================================
-// BRUNO GUIMAR�fES
+// BRUNO GUIMARÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½fES
 // =========================================================
 
 addPlayer({
   id: 247851,
-  name: "Bruno Guimar�es",
+  name: "Bruno GuimarÃ£es",
   position: "CM",
   alternatePositions: "CDM",
   overall: 86,
@@ -473,7 +473,7 @@ addPlayer({
 });
 
 // =========================================================
-// VIKTOR GY�-KERES
+// VIKTOR GYÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“KERES
 // =========================================================
 
 addPlayer({
@@ -671,7 +671,7 @@ addPlayer({
 });
 
 // =========================================================
-// JULIÁN ALVAREZ
+// JULIÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂN ALVAREZ
 // =========================================================
 
 addPlayer({
@@ -835,7 +835,7 @@ addPlayer({
 });
 
 // =========================================================
-// ARDA G�oLER
+// ARDA GÃƒÆ’Ã†â€™Ãƒâ€¦Ã¢â‚¬Å“LER
 // =========================================================
 
 addPlayer({
@@ -845,7 +845,7 @@ addPlayer({
   alternatePositions: "CDM, CM, CAM",
   overall: 83,
   potential: 0,
-  nation: "Türkiye",
+  nation: "TÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¼rkiye",
   club: "Real Madrid",
   league: "LaLiga",
   pace: 77,
@@ -934,7 +934,7 @@ addPlayer({
 });
 
 // =========================================================
-// IBRAHIMA KONAT�?
+// IBRAHIMA KONATÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°
 // =========================================================
 
 addPlayer({
@@ -1000,7 +1000,7 @@ addPlayer({
 });
 
 // =========================================================
-// AUR�?LIEN TCHOUAM�?NI
+// AURÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°LIEN TCHOUAMÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°NI
 // =========================================================
 
 addPlayer({
@@ -1033,12 +1033,12 @@ addPlayer({
 });
 
 // =========================================================
-// �?DER MILIT�fO
+// ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°DER MILITÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢O
 // =========================================================
 
 addPlayer({
   id: 240130,
-  name: "??der Milit�o",
+  name: "Ã‰der MilitÃ£o",
   position: "CB",
   alternatePositions: "RB",
   overall: 84,
@@ -1132,7 +1132,7 @@ addPlayer({
 });
 
 // =========================================================
-// ANTONIO R�oDIGER
+// ANTONIO RÃƒÆ’Ã†â€™Ãƒâ€¦Ã¢â‚¬Å“DIGER
 // =========================================================
 
 addPlayer({
@@ -1165,7 +1165,7 @@ addPlayer({
 });
 
 // =========================================================
-// ÁLVARO CARRERAS
+// ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂLVARO CARRERAS
 // =========================================================
 
 addPlayer({
@@ -1264,7 +1264,7 @@ addPlayer({
 });
 
 // =========================================================
-// BRAHIM DÍAZ
+// BRAHIM DÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂAZ
 // =========================================================
 
 addPlayer({
@@ -1368,7 +1368,7 @@ addPlayer({
   imageStatus: "futgg",
 });
 // =========================================================
-// JOAN GARCÍA
+// JOAN GARCÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂA
 // =========================================================
 
 addPlayer({
@@ -1401,7 +1401,7 @@ addPlayer({
 });
 
 // =========================================================
-// PAU CUBARSÍ
+// PAU CUBARSÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â
 // =========================================================
 
 addPlayer({
@@ -1434,7 +1434,7 @@ addPlayer({
 });
 
 // =========================================================
-// FERMÍN
+// FERMÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂN
 // =========================================================
 
 addPlayer({
@@ -1467,7 +1467,7 @@ addPlayer({
 });
 
 // =========================================================
-// ERIC GARCÍA
+// ERIC GARCÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂA
 // =========================================================
 
 addPlayer({
@@ -1500,7 +1500,7 @@ addPlayer({
 });
 
 // =========================================================
-// JULES KOUND�?
+// JULES KOUNDÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°
 // =========================================================
 
 addPlayer({
@@ -1599,12 +1599,12 @@ addPlayer({
 });
 
 // =========================================================
-// JO�fO CANCELO
+// JOÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢O CANCELO
 // =========================================================
 
 addPlayer({
   id: 210514,
-  name: "Jo�o Cancelo",
+  name: "JoÃ£o Cancelo",
   position: "LB",
   alternatePositions: "RB, RM, LM",
   overall: 83,
@@ -1698,7 +1698,7 @@ addPlayer({
 });
 
 // =========================================================
-// LUIS DÍAZ
+// LUIS DÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂAZ
 // =========================================================
 
 addPlayer({
@@ -1863,7 +1863,7 @@ addPlayer({
 });
 
 // =========================================================
-// HUGO EKITIK�?
+// HUGO EKITIKÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°
 // =========================================================
 
 addPlayer({
@@ -1994,7 +1994,7 @@ addPlayer({
 });
 
 // =========================================================
-// FABIÁN RUIZ
+// FABIÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂN RUIZ
 // =========================================================
 
 addPlayer({
@@ -2027,7 +2027,7 @@ addPlayer({
 });
 
 // =========================================================
-// D�?SIR�? DOU�?
+// DÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°SIRÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â° DOUÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°
 // =========================================================
 
 addPlayer({
@@ -2060,7 +2060,7 @@ addPlayer({
 });
 
 // =========================================================
-// I�'IGO MARTÍNEZ
+// IÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½'IGO MARTÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂNEZ
 // =========================================================
 
 addPlayer({
@@ -2093,12 +2093,12 @@ addPlayer({
 });
 
 // =========================================================
-// JO�fO F�?LIX
+// JOÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢O FÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°LIX
 // =========================================================
 
 addPlayer({
   id: 242444,
-  name: "Jo�o F�lix",
+  name: "JoÃ£o FÃ©lix",
   position: "ST",
   alternatePositions: "CAM, CF",
   overall: 82,
@@ -2258,7 +2258,7 @@ addPlayer({
 });
 
 // =========================================================
-// R�sBEN DIAS
+// RÃƒÆ’Ã†â€™Ãƒâ€¦Ã‚Â¡BEN DIAS
 // =========================================================
 
 addPlayer({
@@ -2291,7 +2291,7 @@ addPlayer({
 });
 
 // =========================================================
-// ENZO FERNÁNDEZ
+// ENZO FERNÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂNDEZ
 // =========================================================
 
 addPlayer({
@@ -2357,7 +2357,7 @@ addPlayer({
 });
 
 // =========================================================
-// JOŠKO GVARDIOL
+// JOÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â KO GVARDIOL
 // =========================================================
 
 addPlayer({
@@ -2456,7 +2456,7 @@ addPlayer({
 });
 
 // =========================================================
-// J�?R�?MY DOKU
+// JÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°RÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°MY DOKU
 // =========================================================
 
 addPlayer({
@@ -2719,12 +2719,12 @@ addPlayer({
 });
 
 // =========================================================
-// MARTIN �~DEGAARD
+// MARTIN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½~DEGAARD
 // =========================================================
 
 addPlayer({
   id: 222665,
-  name: "Martin �~degaard",
+  name: "Martin ÃƒÆ’Ã‹Å“degaard",
   position: "CM",
   alternatePositions: "CAM",
   overall: 86,
@@ -2785,7 +2785,7 @@ addPlayer({
 });
 
 // =========================================================
-// JURRI�<N TIMBER
+// JURRIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹N TIMBER
 // =========================================================
 
 addPlayer({
@@ -2884,7 +2884,7 @@ addPlayer({
 });
 
 // =========================================================
-// ALEXANDER S�~RLOTH
+// ALEXANDER SÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½~RLOTH
 // =========================================================
 
 addPlayer({
@@ -2983,7 +2983,7 @@ addPlayer({
 });
 
 // =========================================================
-// LUIS SUÁREZ
+// LUIS SUÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂREZ
 // =========================================================
 
 addPlayer({
@@ -3016,7 +3016,7 @@ addPlayer({
 });
 
 // =========================================================
-// GERMÁN BERTERAME
+// GERMÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂN BERTERAME
 // =========================================================
 
 addPlayer({
@@ -3115,7 +3115,7 @@ addPlayer({
 });
 
 // =========================================================
-// MOIS�?S CAICEDO
+// MOISÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°S CAICEDO
 // =========================================================
 
 addPlayer({
@@ -3214,12 +3214,12 @@ addPlayer({
 });
 
 // =========================================================
-// JO�fO PEDRO
+// JOÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢O PEDRO
 // =========================================================
 
 addPlayer({
   id: 252042,
-  name: "Jo�o Pedro",
+  name: "JoÃ£o Pedro",
   position: "ST",
   alternatePositions: "CAM",
   overall: 83,
@@ -3283,7 +3283,7 @@ addPlayer({
 // FINAL EXPORT
 // =========================================================
 // =========================================================
-// INTER MILAN �?" LAUTARO MARTÍNEZ
+// INTER MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" LAUTARO MARTÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂNEZ
 // =========================================================
 
 players.push({
@@ -3325,7 +3325,7 @@ players.push({
 
 
 // =========================================================
-// INTER MILAN �?" NICOL�' BARELLA
+// INTER MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" NICOLÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½' BARELLA
 // =========================================================
 
 players.push({
@@ -3367,7 +3367,7 @@ players.push({
 
 
 // =========================================================
-// INTER MILAN �?" ALESSANDRO BASTONI
+// INTER MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" ALESSANDRO BASTONI
 // =========================================================
 
 players.push({
@@ -3409,7 +3409,7 @@ players.push({
 
 
 // =========================================================
-// INTER MILAN �?" FEDERICO DIMARCO
+// INTER MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" FEDERICO DIMARCO
 // =========================================================
 
 players.push({
@@ -3451,7 +3451,7 @@ players.push({
 
 
 // =========================================================
-// INTER MILAN �?" MARCUS THURAM
+// INTER MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" MARCUS THURAM
 // FC 27 TEAM OF THE WEEK 86
 // =========================================================
 
@@ -3492,7 +3492,7 @@ players.push({
   imageStatus: "futgg"
 });
 // =========================================================
-// AC MILAN �?" MIKE MAIGNAN
+// AC MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" MIKE MAIGNAN
 // =========================================================
 
 players.push({
@@ -3536,7 +3536,7 @@ players.push({
 
 
 // =========================================================
-// AC MILAN �?" ADRIEN RABIOT
+// AC MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" ADRIEN RABIOT
 // =========================================================
 
 players.push({
@@ -3578,12 +3578,12 @@ players.push({
 
 
 // =========================================================
-// AC MILAN �?" LUKA MODRI�?
+// AC MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" LUKA MODRIÃƒÆ’Ã¢â‚¬Å¾ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â 
 // =========================================================
 
 players.push({
   id: 177003,
-  name: "Luka Modri�?",
+  name: "Luka ModriÄ‡",
   position: "CM",
   alternatePositions: "CDM, CAM",
 
@@ -3620,7 +3620,7 @@ players.push({
 
 
 // =========================================================
-// AC MILAN �?" CHRISTIAN PULISIC
+// AC MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" CHRISTIAN PULISIC
 // =========================================================
 
 players.push({
@@ -3662,7 +3662,7 @@ players.push({
 
 
 // =========================================================
-// AC MILAN �?" MARIO GILA
+// AC MILAN ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" MARIO GILA
 // =========================================================
 
 players.push({
@@ -3702,7 +3702,7 @@ players.push({
   imageStatus: "futgg"
 });
 // ============================================================
-// BORUSSIA DORTMUND �?" TOP 5
+// BORUSSIA DORTMUND ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" TOP 5
 // ============================================================
 
 // GREGOR KOBEL
@@ -3823,7 +3823,7 @@ players.push({
 });
 
 
-// FELIX NMECHA �?" GOLD / RARE
+// FELIX NMECHA ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" GOLD / RARE
 players.push({
   id: 246863,
   name: "Felix Nmecha",
@@ -3896,7 +3896,7 @@ players.push({
   imageStatus: "futgg"
 });
 // ============================================================
-// SPURS �?" TOP 5 GOLD / RARE
+// SPURS ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½?" TOP 5 GOLD / RARE
 // ============================================================
 
 // SANDRO TONALI
@@ -5489,7 +5489,7 @@ addPlayer({
   overall: 90,
   potential: 90,
   nation: "England",
-  club: "FC Bayern München",
+  club: "Bayern München",
   league: "Bundesliga",
   cardType: "Base",
   promoName: "Gold",
@@ -5515,7 +5515,7 @@ addPlayer({
   overall: 90,
   potential: 91,
   nation: "France",
-  club: "FC Bayern München",
+  club: "Bayern München",
   league: "Bundesliga",
   cardType: "Base",
   promoName: "Gold",

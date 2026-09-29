@@ -47,16 +47,33 @@ function PlayerDetails({
         <div className="profile-background-glow" />
 
         <div className="profile-player-image">
-          {player.image ? (
-            <img
-              src={player.image}
-              alt={player.name}
-            />
-          ) : (
-            <div className="profile-image-placeholder">
-              {player.name?.charAt(0) || "?"}
+          
+          <div className="fut-player-card">
+
+            <div className="fut-card-background">
+              <div className="fut-card-panel panel-left"></div>
+              <div className="fut-card-panel panel-right"></div>
+              <div className="fut-card-panel panel-top"></div>
+              <div className="fut-card-glow"></div>
             </div>
-          )}
+
+            <div className="fut-card-frame"></div>
+
+            {player.image ? (
+              <img
+                src={player.image}
+                alt={player.name}
+                className="fut-player-cutout"
+              />
+            ) : (
+              <div className="profile-image-placeholder">
+                {player.name?.charAt(0) || "?"}
+              </div>
+            )}
+
+            <div className="fut-card-shine"></div>
+
+          </div>
         </div>
 
         <div className="profile-main-info">
@@ -237,3 +254,6 @@ function PlayerDetails({
 }
 
 export default PlayerDetails;
+
+
+
