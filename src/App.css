@@ -1181,3 +1181,180 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
 }
+
+/* ================================
+   FC27 META SPLASH SCREEN
+================================ */
+
+.fc27-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 0, 60, 0.14), transparent 32%),
+    radial-gradient(circle at 50% 55%, rgba(255, 215, 0, 0.06), transparent 40%),
+    #08080c;
+  opacity: 1;
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.fc27-splash--fade {
+  opacity: 0;
+  transform: scale(1.025);
+  pointer-events: none;
+}
+
+.fc27-splash-glow {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: rgba(255, 0, 60, 0.08);
+  filter: blur(90px);
+  animation: fc27SplashGlow 2s ease-in-out infinite alternate;
+}
+
+.fc27-splash-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.fc27-splash-logo-wrap {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.55),
+    0 0 55px rgba(255, 0, 60, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: fc27SplashLogo 900ms cubic-bezier(.2,.8,.2,1);
+}
+
+.fc27-splash-logo {
+  width: 118px;
+  height: 118px;
+  object-fit: contain;
+  display: block;
+}
+
+.fc27-splash-title {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.12);
+  animation: fc27SplashText 700ms ease both;
+}
+
+.fc27-splash-subtitle {
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  color: rgba(255, 255, 255, 0.42);
+  animation: fc27SplashText 700ms 100ms ease both;
+}
+
+.fc27-splash-loader {
+  width: 100px;
+  height: 3px;
+  margin-top: 34px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fc27-splash-loader span {
+  display: block;
+  width: 45%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #ff174f,
+    #ff3b30,
+    #ffd700
+  );
+  box-shadow: 0 0 14px rgba(255, 23, 79, 0.55);
+  animation: fc27SplashLoader 900ms ease-in-out infinite;
+}
+
+@keyframes fc27SplashLogo {
+  from {
+    opacity: 0;
+    transform: scale(0.72) translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fc27SplashText {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fc27SplashGlow {
+  from {
+    transform: scale(0.9);
+    opacity: 0.65;
+  }
+
+  to {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes fc27SplashLoader {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@media (max-width: 480px) {
+  .fc27-splash-logo-wrap {
+    width: 132px;
+    height: 132px;
+    border-radius: 30px;
+  }
+
+  .fc27-splash-logo {
+    width: 104px;
+    height: 104px;
+  }
+
+  .fc27-splash-title {
+    font-size: 25px;
+  }
+}

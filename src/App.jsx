@@ -1,4 +1,5 @@
-﻿import { useMemo, useState } from "react";
+import SplashScreen from "./components/SplashScreen"
+import { useMemo, useState } from "react";
 
 import "country-flag-icons/3x2/flags.css";
 
@@ -286,7 +287,10 @@ function App() {
 
 
   return (
-    <div className="app">
+    <>
+      <SplashScreen />
+
+      <div className="app">
       <div className="background-grid" />
 
       <div className="red-glow red-glow-one" />
@@ -371,7 +375,7 @@ function App() {
 
             {filteredPlayers.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-symbol">×</div>
+                <div className="empty-symbol">�</div>
 
                 <h3>No players found</h3>
 
@@ -463,6 +467,10 @@ function App() {
 }
 
 export default App;
+
+
+
+
 
 
 
