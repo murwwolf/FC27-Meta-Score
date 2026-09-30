@@ -13,13 +13,15 @@ import Footer from "./components/Footer";
 
 const getOptions = (players, key) => ["All", ...new Set(players.map((player) => player[key]).filter(Boolean))]
   .sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b));
+const POSITION_ORDER = ["ST", "CF", "LW", "RW", "LM", "RM", "CAM", "CM", "CDM", "LB", "LWB", "RB", "RWB", "CB", "GK"];
+const normalizeSearch = (value) => String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 function AppShell() {
   const [page, setPage] = useState("home");
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState("All");
   const [tier, setTier] = useState("All");
-  const [minRating, setMinRating] = useState("All");
+  const [minRating, setMinRating] = useState("0");
   const [leagueFilter, setLeagueFilter] = useState("All");
   const [clubFilter, setClubFilter] = useState("All");
   const [nationFilter, setNationFilter] = useState("All");
@@ -37,53 +39,56 @@ function AppShell() {
   }), []);
 
   const filteredPlayers = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = normalizeSearch(search.trim());
     const result = scoredPlayers.filter((player) => {
-      const matchesQuery = !query || [player.name, player.club, player.nation, player.position, player.league]
-        .filter(Boolean).some((value) => String(value).toLowerCase().includes(query));
+      const matchesQuery = !query || normalizeSearch(player.name).includes(query);
       return matchesQuery &&
         (position === "All" || player.position === position) &&
         (tier === "All" || player.tier === tier) &&
-        (minRating === "All" || Number(player.overall) >= Number(minRating)) &&
+        Number(player.overall) >= Number(minRating) &&
         (leagueFilter === "All" || player.league === leagueFilter) &&
         (clubFilter === "All" || player.club === clubFilter) &&
         (nationFilter === "All" || player.nation === nationFilter) &&
-        (cardTypeFilter === "All" || (player.cardType || player.promoName || "Base") === cardTypeFilter);
+        (cardTypeFilter === "All" || player.cardType === cardTypeFilter || player.promoName === cardTypeFilter);
     });
-    const sorters = {
-      "meta-desc": (a, b) => b.metaScore - a.metaScore,
-      "meta-asc": (a, b) => a.metaScore - b.metaScore,
-      "ovr-desc": (a, b) => b.overall - a.overall,
-      "ovr-asc": (a, b) => a.overall - b.overall,
-      "name-asc": (a, b) => a.name.localeCompare(b.name),
-      "name-desc": (a, b) => b.name.localeCompare(a.name),
-      "pace-desc": (a, b) => b.pace - a.pace,
-      "pac-desc": (a, b) => b.pace - a.pace,
-      "shooting-desc": (a, b) => b.shooting - a.shooting,
-      "sho-desc": (a, b) => b.shooting - a.shooting,
-      "passing-desc": (a, b) => b.passing - a.passing,
-      "pas-desc": (a, b) => b.passing - a.passing,
-      "dribbling-desc": (a, b) => b.dribbling - a.dribbling,
-      "dri-desc": (a, b) => b.dribbling - a.dribbling,
-      "defending-desc": (a, b) => b.defending - a.defending,
-      "def-desc": (a, b) => b.defending - a.defending,
-      "physical-desc": (a, b) => b.physical - a.physical,
-      "phy-desc": (a, b) => b.physical - a.physical,
+    const sortFields = {
+      "meta-desc": ["metaScore", "desc"], "meta-asc": ["metaScore", "asc"],
+      "ovr-desc": ["overall", "desc"], "ovr-asc": ["overall", "asc"],
+      "name-asc": ["name", "asc"], "name-desc": ["name", "desc"],
+      "pac-desc": ["pace", "desc"], "pac-asc": ["pace", "asc"],
+      "sho-desc": ["shooting", "desc"], "sho-asc": ["shooting", "asc"],
+      "pas-desc": ["passing", "desc"], "pas-asc": ["passing", "asc"],
+      "dri-desc": ["dribbling", "desc"], "dri-asc": ["dribbling", "asc"],
+      "def-desc": ["defending", "desc"], "def-asc": ["defending", "asc"],
+      "phy-desc": ["physical", "desc"], "phy-asc": ["physical", "asc"],
     };
-    return result.sort(sorters[sortBy] || sorters["meta-desc"]);
+    const [sortField, direction] = sortFields[sortBy] || sortFields["meta-desc"];
+    const sortDirection = direction === "asc" ? -1 : 1;
+    return result.sort((left, right) => {
+      const primary = sortField === "name"
+        ? String(left.name || "").localeCompare(String(right.name || "")) * sortDirection
+        : (Number(right[sortField] || 0) - Number(left[sortField] || 0)) * sortDirection;
+      if (primary !== 0) return primary;
+      const overall = Number(right.overall || 0) - Number(left.overall || 0);
+      return overall || String(left.name || "").localeCompare(String(right.name || ""));
+    });
   }, [scoredPlayers, search, position, tier, minRating, leagueFilter, clubFilter, nationFilter, cardTypeFilter, sortBy]);
 
-  const positions = useMemo(() => ["All", ...new Set(scoredPlayers.map((player) => player.position).filter(Boolean))], [scoredPlayers]);
+  const positions = useMemo(() => {
+    const existing = new Set(scoredPlayers.map((player) => String(player.position || "").trim().toUpperCase()).filter(Boolean));
+    return ["All", ...POSITION_ORDER.filter((item) => existing.has(item)), ...[...existing].filter((item) => !POSITION_ORDER.includes(item)).sort()];
+  }, [scoredPlayers]);
   const leagues = useMemo(() => getOptions(scoredPlayers, "league"), [scoredPlayers]);
   const clubs = useMemo(() => getOptions(scoredPlayers, "club"), [scoredPlayers]);
   const nations = useMemo(() => getOptions(scoredPlayers, "nation"), [scoredPlayers]);
-  const cardTypes = useMemo(() => ["All", ...new Set(scoredPlayers.map((player) => player.cardType || player.promoName || "Base"))]
+  const cardTypes = useMemo(() => ["All", ...new Set(scoredPlayers.flatMap((player) => [player.cardType, player.promoName]).filter(Boolean))]
     .sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b)), [scoredPlayers]);
+  const overallOptions = useMemo(() => [...new Set(scoredPlayers.map((player) => Number(player.overall)).filter((rating) => Number.isFinite(rating) && rating >= 80))].sort((a, b) => a - b), [scoredPlayers]);
 
   function openPlayer(player) { setSelectedPlayer(player); setPage("player"); }
   function goHome() { setPage("home"); setSelectedPlayer(null); }
   function clearFilters() {
-    setSearch(""); setPosition("All"); setTier("All"); setMinRating("All");
+    setSearch(""); setPosition("All"); setTier("All"); setMinRating("0");
     setSortBy("meta-desc"); setLeagueFilter("All"); setClubFilter("All");
     setNationFilter("All"); setCardTypeFilter("All");
   }
@@ -147,9 +152,9 @@ function AppShell() {
         clubFilter={clubFilter} setClubFilter={setClubFilter}
         nationFilter={nationFilter} setNationFilter={setNationFilter}
         cardTypeFilter={cardTypeFilter} setCardTypeFilter={setCardTypeFilter} cardTypes={cardTypes}
-        minRating={minRating} setMinRating={setMinRating} sortBy={sortBy} setSortBy={setSortBy}
+        minRating={minRating} setMinRating={setMinRating} overallOptions={overallOptions} sortBy={sortBy} setSortBy={setSortBy}
         positions={positions} leagues={leagues} clubs={clubs} nations={nations}
-        onOpen={openPlayer} onCompare={addToCompare} onClear={clearFilters}
+        onOpen={openPlayer} onCompare={addToCompare} onClear={clearFilters} totalPlayers={scoredPlayers.length}
       />}
       {page === "rankings" && <RankingsPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
       {page === "compare" && <ComparePage players={comparePlayers} allPlayers={scoredPlayers} onSelect={selectComparePlayer} onRemove={removeComparePlayer} onSwap={swapComparePlayers} onOpen={openPlayer} />}

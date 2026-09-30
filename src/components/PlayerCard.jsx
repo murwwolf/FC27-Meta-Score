@@ -28,7 +28,7 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
   const [imageFailed, setImageFailed] = useState(false);
   const isGK = player.position === "GK";
   const countryCode = getCountryCode(player.nation);
-  const cardType = player.cardType || player.promoName || "Base";
+  const cardType = player.cardType || player.promoName || "Not listed";
 
   return (
     <article
