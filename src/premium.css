@@ -92,10 +92,10 @@ body { min-width: 320px; background: var(--fc-bg); }
 .filter-box select { height: 48px; border-radius: 6px; padding-left: 13px; font-size: 9px; }
 .search-box input { min-width: 0; font-size: 12px; }
 .players-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
-.player-card { border: 1px solid rgba(255, 255, 255, 0.085); border-radius: 8px; background: linear-gradient(145deg, rgba(24, 26, 31, 0.97), rgba(13, 14, 17, 0.98)); box-shadow: 0 13px 32px rgba(0, 0, 0, 0.27); transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease; }
+.player-card { border: 1px solid rgba(255, 255, 255, 0.085); border-radius: 8px; background-image: url("/player-card-background.svg"); background-position: center; background-size: cover; background-repeat: no-repeat; box-shadow: 0 13px 32px rgba(0, 0, 0, 0.27); transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease; }
 .player-card:hover { transform: translateY(-4px); border-color: rgba(255, 215, 0, 0.45); box-shadow: 0 18px 38px rgba(0, 0, 0, 0.38), 0 0 24px rgba(255, 215, 0, 0.045); }
 .card-top { min-height: 75px; background: linear-gradient(112deg, rgba(136, 19, 29, 0.82), rgba(49, 15, 20, 0.7) 58%, rgba(14, 15, 18, 0.8)); }
-.player-image-area { height: 260px; background: radial-gradient(ellipse at 53% 75%, rgba(164, 26, 36, 0.24), transparent 52%), linear-gradient(180deg, #121418, #0a0b0d); }
+.player-image-area { height: 260px; background: radial-gradient(ellipse at 53% 75%, rgba(164, 26, 36, 0.24), transparent 52%), linear-gradient(180deg, rgba(18, 20, 24, 0.58), rgba(10, 11, 13, 0.58)); }
 .image-glow { background: #bd2532; opacity: 0.14; }
 .meta-score { width: 70px; height: 76px; border-radius: 7px; border-color: rgba(255, 215, 0, 0.67); background: rgba(12, 13, 14, 0.95); }
 .player-info { padding: 15px 16px 16px; }
