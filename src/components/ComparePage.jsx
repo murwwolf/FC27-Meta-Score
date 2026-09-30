@@ -14,20 +14,25 @@ function ComparePage({
 
   return (
     <main className="compare-page">
-      <section className="compare-header">
+      <div className="hero-top">
+        <div className="gold-line" />
+        <div className="hero-label">FC27 PLAYER COMPARE</div>
+        <div className="gold-line" />
+      </div>
+
+      <section className="compare-header section-header">
         <div>
-          <div className="section-label">
-            PLAYER COMPARISON
-          </div>
+          <div className="section-label">PLAYER COMPARISON</div>
+          <h2>FC27 PLAYER COMPARE</h2>
+        </div>
 
-          <h1>COMPARE FC27 PLAYERS</h1>
-
-          <p>
-            Select two players to compare their stats and META
-            scores.
-          </p>
+        <div className="database-counter">
+          <span className="counter-number">{allPlayers.length}</span>
+          <span className="counter-text">PLAYERS</span>
         </div>
       </section>
+
+      <p className="compare-subtitle">Compare two FC27 Ultimate Team players side by side.</p>
 
       <section className="compare-selectors">
         <CompareSelector
@@ -56,17 +61,18 @@ function ComparePage({
         />
       ) : (
         <div className="empty-state">
-          <div className="empty-symbol">⚔</div>
-
           <h3>
             {first || second
               ? "Select one more player"
-              : "Select two players"}
+              : allPlayers.length >= 2
+                ? "Select two players"
+                : "No players available"}
           </h3>
 
           <p>
-            Choose two FC27 players above to start comparing
-            their stats.
+            {allPlayers.length >= 2
+              ? "Choose two FC27 players above to compare their stats and META scores."
+              : "There are not enough players in the current database to run a comparison."}
           </p>
         </div>
       )}

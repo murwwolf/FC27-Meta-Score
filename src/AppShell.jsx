@@ -26,7 +26,10 @@ function AppShell() {
   const [cardTypeFilter, setCardTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("meta-desc");
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [comparePlayers, setComparePlayers] = useState([]);
+  const [comparePlayers, setComparePlayers] = useState(() => players.slice(0, 2).map((player) => {
+    const metaScore = calculateMetaScore(player);
+    return { ...player, metaScore, tier: getTier(metaScore) };
+  }));
 
   const scoredPlayers = useMemo(() => players.map((player) => {
     const metaScore = calculateMetaScore(player);
