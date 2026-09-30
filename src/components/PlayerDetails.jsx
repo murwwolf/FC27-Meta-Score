@@ -1,36 +1,23 @@
-﻿import { useState } from "react";
+﻿import PlayerCard from "./PlayerCard";
 import MetaBreakdown from "./MetaBreakdown";
 import ProfileStat from "./ProfileStat";
 import ProfileInfo from "./ProfileInfo";
 
-function PlayerDetails({
-  player,
-  onBack,
-  onCompare,
-}) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const isGK = player.position === "GK";
-  const listValue = (value) => Array.isArray(value) ? value.join(", ") || "Not listed" : value || "Not listed";
-  const playStyles = player.playStyles || player.playstyles;
-  const playStylesPlus = player.playStylesPlus || player.playstylesPlus || player.playStylePlus;
+function formatValue(value, suffix = "") {
+  if (Array.isArray(value)) return value.length ? `${value.join(", ")}${suffix}` : "Not listed";
+  if (value === null || value === undefined || value === "") return "Not listed";
+  return `${value}${suffix}`;
+}
 
-  const attributes = isGK
-    ? [
-        ["DIV", player.pace],
-        ["HAN", player.shooting],
-        ["KICK", player.passing],
-        ["REF", player.dribbling],
-        ["SPD", player.defending],
-        ["POS", player.physical],
-      ]
-    : [
-        ["PAC", player.pace],
-        ["SHO", player.shooting],
-        ["PAS", player.passing],
-        ["DRI", player.dribbling],
-        ["DEF", player.defending],
-        ["PHY", player.physical],
-      ];
+function toPlayStyles(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  return typeof value === "string" && value.trim() ? [value] : [];
+}
+
+function PlayerDetails({ player, onBack, onCompare }) {
+  const playStyles = toPlayStyles(player.playStyles || player.playstyles);
+  const playStylesPlus = toPlayStyles(player.playStylesPlus || player.playstylesPlus || player.playStylePlus);
+  const workRate = [player.attackingWorkRate, player.defensiveWorkRate].filter(Boolean).join(" / ");
 
   return (
     <main className="player-details-page">
@@ -44,238 +31,110 @@ function PlayerDetails({
         </button>
 
         <div className="player-details-label">
-          FC27 PLAYER PROFILE
+          PLAYER PROFILE / FC27 ULTIMATE TEAM
         </div>
       </div>
 
-      <section className="player-profile-hero">
-        <div className="profile-background-glow" />
+      <div className="player-profile-layout">
+        <aside className="player-details-card-column" aria-label={`${player.name} player card`}>
+          <PlayerCard player={player} onOpen={() => {}} onCompare={onCompare} />
+        </aside>
 
-        <div className="profile-player-image">
-          
-          <div className="fut-player-card">
-
-            <div className="fut-card-background">
-              <div className="fut-card-panel panel-left"></div>
-              <div className="fut-card-panel panel-right"></div>
-              <div className="fut-card-panel panel-top"></div>
-              <div className="fut-card-glow"></div>
-            </div>
-
-            <div className="fut-card-frame"></div>
-
-            {player.image && !imageFailed ? (
-              <img
-                src={player.image}
-                alt={player.name}
-                className="fut-player-cutout"
-                onError={() => setImageFailed(true)}
-              />
-            ) : (
-              <div className="profile-image-placeholder">
-                {player.name?.charAt(0) || "?"}
+        <div className="player-profile-main">
+          <header className="profile-summary-panel">
+            <div className="profile-summary-copy">
+              <div className="profile-kicker">{player.position} / PLAYER DOSSIER</div>
+              <h1>{player.name}</h1>
+              <div className="profile-meta-line">
+                <span>{player.position}</span>
+                <span>{player.club}</span>
+                <span>{player.league}</span>
+                <span>{player.nation}</span>
               </div>
-            )}
-
-            <div className="fut-card-shine"></div>
-
-          </div>
-        </div>
-
-        <div className="profile-main-info">
-          <div className="profile-kicker">
-            {player.position} • FC27
-          </div>
-
-          <h1>{player.name}</h1>
-
-          <div className="profile-meta-line">
-            <span>{player.nation}</span>
-            <span>•</span>
-            <span>{player.league}</span>
-            <span>•</span>
-            <span>{player.club}</span>
-          </div>
-
-          <div className="profile-rating-row">
-            <div className="profile-rating">
-              <small>OVR</small>
-              <strong>{player.overall}</strong>
             </div>
-
-            <div className="profile-tier">
-              <small>META TIER</small>
-              <strong>{player.tier}</strong>
+            <div className="profile-score-lockup" data-meta-tier={player.tier}>
+              <span>META SCORE</span>
+              <strong>{player.metaScore}<small>/100</small></strong>
+              <b>{player.tier} TIER</b>
             </div>
-          </div>
+            <div className="profile-summary-footer">
+              <span>OVERALL <strong>{player.overall}</strong></span>
+              <span>POSITION <strong>{player.position}</strong></span>
+              <button type="button" className="profile-compare-button" onClick={() => onCompare(player)}>
+                ADD TO COMPARE
+              </button>
+            </div>
+          </header>
 
-          <button
-            type="button"
-            className="profile-compare-button"
-            onClick={() => onCompare(player)}
-          >
-            ⚔ ADD TO COMPARE
-          </button>
+          <section className="profile-content-section" aria-labelledby="profile-stats-title">
+            <div className="profile-section-heading">
+              <span>01</span>
+              <div><small>PLAYER ATTRIBUTES</small><h2 id="profile-stats-title">BASE STATS</h2></div>
+            </div>
+            <div className="profile-stats-panel">
+              {[["PAC", player.pace], ["SHO", player.shooting], ["PAS", player.passing], ["DRI", player.dribbling], ["DEF", player.defending], ["PHY", player.physical]].map(([label, value]) => (
+                <ProfileStat key={label} label={label} value={value} />
+              ))}
+            </div>
+          </section>
+
+          <section className="profile-content-section profile-analysis-section" aria-labelledby="profile-analysis-title">
+            <div className="profile-section-heading">
+              <span>02</span>
+              <div><small>POSITION-AWARE RATING</small><h2 id="profile-analysis-title">META ANALYSIS</h2></div>
+            </div>
+            <div className="profile-analysis-score">
+              <div><span>OVERALL META SCORE</span><strong>{player.metaScore}<small>/100</small></strong></div>
+              <span className="profile-analysis-tier">{player.tier} TIER</span>
+            </div>
+            <MetaBreakdown player={player} />
+          </section>
+
+          <section className="profile-content-section" aria-labelledby="profile-details-title">
+            <div className="profile-section-heading">
+              <span>03</span>
+              <div><small>PLAYER INFORMATION</small><h2 id="profile-details-title">DETAILS</h2></div>
+            </div>
+            <div className="profile-info-grid">
+              <ProfileInfo label="PREFERRED FOOT" value={formatValue(player.preferredFoot)} />
+              <ProfileInfo label="WEAK FOOT" value={formatValue(player.weakFoot, "★")} />
+              <ProfileInfo label="SKILL MOVES" value={formatValue(player.skillMoves, "★")} />
+              <ProfileInfo label="WORK RATE" value={workRate || "Not listed"} />
+              <ProfileInfo label="HEIGHT" value={formatValue(player.height, " cm")} />
+              <ProfileInfo label="BODY TYPE" value={formatValue(player.bodyType)} />
+              <ProfileInfo label="ALTERNATE POSITIONS" value={formatValue(player.alternatePositions)} />
+              <ProfileInfo label="CLUB" value={formatValue(player.club)} />
+              <ProfileInfo label="LEAGUE" value={formatValue(player.league)} />
+              <ProfileInfo label="NATION" value={formatValue(player.nation)} />
+            </div>
+          </section>
+
+          {playStyles.length || playStylesPlus.length ? (
+            <section className="profile-content-section" aria-labelledby="profile-playstyles-title">
+              <div className="profile-section-heading">
+                <span>04</span>
+                <div><small>IN-GAME TRAITS</small><h2 id="profile-playstyles-title">PLAYSTYLES</h2></div>
+              </div>
+              <div className="profile-playstyles-grid">
+                {playStyles.length ? <div className="profile-playstyle-group"><h3>PLAYSTYLES</h3><div>{playStyles.map((style) => <span key={style}>{style}</span>)}</div></div> : null}
+                {playStylesPlus.length ? <div className="profile-playstyle-group is-plus"><h3>PLAYSTYLES+</h3><div>{playStylesPlus.map((style) => <span key={style}>{style}</span>)}</div></div> : null}
+              </div>
+            </section>
+          ) : null}
+
+          <section className="profile-content-section" aria-labelledby="profile-card-info-title">
+            <div className="profile-section-heading">
+              <span>{playStyles.length || playStylesPlus.length ? "05" : "04"}</span>
+              <div><small>ITEM RECORD</small><h2 id="profile-card-info-title">CARD INFORMATION</h2></div>
+            </div>
+            <div className="profile-info-grid profile-card-info-grid">
+              <ProfileInfo label="CARD TYPE" value={formatValue(player.cardType || player.promoName)} />
+              <ProfileInfo label="PROMO NAME" value={formatValue(player.promoName || player.promo)} />
+              {player.dataVerified !== undefined ? <ProfileInfo label="DATA VERIFIED" value={player.dataVerified ? "Verified" : "Unverified"} /> : null}
+            </div>
+          </section>
         </div>
-
-        <div className="profile-meta-card" data-meta-tier={player.tier}>
-          <div className="profile-meta-label">
-            META SCORE
-          </div>
-
-          <div className="profile-meta-number">
-            {player.metaScore}
-          </div>
-
-          <div className="profile-score-max">/100</div>
-
-          <div className="profile-meta-tier">
-            {player.tier} TIER
-          </div>
-
-          <div className="profile-meta-line-small">
-            FC27 META RATING
-          </div>
-        </div>
-      </section>
-
-      <section className="player-profile-content">
-        <div className="profile-section-heading">
-          <span>01</span>
-
-          <div>
-            <small>META ANALYSIS</small>
-            <h2>SCORE BREAKDOWN</h2>
-          </div>
-        </div>
-
-        <details className="meta-explainer">
-          <summary>HOW IS THIS CALCULATED? <span>VIEW POSITION WEIGHTS AND SCORE MODIFIERS</span></summary>
-          <MetaBreakdown player={player} />
-        </details>
-
-        <div className="profile-section-heading">
-          <span>02</span>
-
-          <div>
-            <small>PLAYER ATTRIBUTES</small>
-            <h2>BASE STATS</h2>
-          </div>
-        </div>
-
-        <div className="profile-stats-panel">
-          {attributes.map(([label, value]) => (
-            <ProfileStat
-              key={label}
-              label={label}
-              value={value}
-            />
-          ))}
-        </div>
-
-        <div className="profile-section-heading">
-          <span>03</span>
-
-          <div>
-            <small>PLAYER INFORMATION</small>
-            <h2>DETAILS</h2>
-          </div>
-        </div>
-
-        <div className="profile-info-grid">
-          <ProfileInfo
-            label="POSITION"
-            value={player.position}
-          />
-
-          <ProfileInfo
-            label="ALTERNATE POSITIONS"
-            value={player.alternatePositions || "N/A"}
-          />
-
-          <ProfileInfo
-            label="PREFERRED FOOT"
-            value={player.preferredFoot || "N/A"}
-          />
-
-          <ProfileInfo
-            label="SKILL MOVES"
-            value={`${player.skillMoves || 0}★`}
-          />
-
-          <ProfileInfo
-            label="WEAK FOOT"
-            value={`${player.weakFoot || 0}★`}
-          />
-
-          <ProfileInfo
-            label="HEIGHT"
-            value={`${player.height || 0} cm`}
-          />
-
-          <ProfileInfo label="BODY TYPE" value={player.bodyType || "Not listed"} />
-
-          <ProfileInfo label="PLAYSTYLES" value={listValue(playStyles)} />
-
-          <ProfileInfo label="PLAYSTYLES+" value={listValue(playStylesPlus)} />
-
-          <ProfileInfo
-            label="WEIGHT"
-            value={`${player.weight || 0} kg`}
-          />
-
-          <ProfileInfo
-            label="ATTACKING WORK RATE"
-            value={player.attackingWorkRate || "N/A"}
-          />
-
-          <ProfileInfo
-            label="DEFENSIVE WORK RATE"
-            value={player.defensiveWorkRate || "N/A"}
-          />
-
-          <ProfileInfo
-            label="CARD TYPE"
-            value={player.cardType || player.promoName || "Base"}
-          />
-
-          <ProfileInfo
-            label="PROMO INFORMATION"
-            value={player.promoName || player.promo || "Not listed"}
-          />
-        </div>
-
-        <div className="profile-section-heading">
-          <span>04</span>
-
-          <div>
-            <small>CLUB & COUNTRY</small>
-            <h2>IDENTITY</h2>
-          </div>
-        </div>
-
-        <div className="profile-identity-grid">
-          <div className="identity-card">
-            <span>NATION</span>
-            <strong>{player.nation}</strong>
-          </div>
-
-          <div className="identity-card">
-            <span>CLUB</span>
-            <strong>{player.club}</strong>
-          </div>
-
-          <div className="identity-card">
-            <span>LEAGUE</span>
-            <strong>{player.league}</strong>
-          </div>
-
-          <div className="identity-card">
-            <span>OVERALL RATING</span>
-            <strong>{player.overall}</strong>
-          </div>
-        </div>
-      </section>
+      </div>
     </main>
   );
 }

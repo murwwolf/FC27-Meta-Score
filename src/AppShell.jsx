@@ -150,7 +150,7 @@ function AppShell() {
       />}
       {page === "rankings" && <RankingsPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
       {page === "compare" && <ComparePage players={comparePlayers} allPlayers={scoredPlayers} onSelect={selectComparePlayer} onRemove={removeComparePlayer} onSwap={swapComparePlayers} onOpen={openPlayer} />}
-      {page === "player" && selectedPlayer && <PlayerDetails player={selectedPlayer} onBack={goHome} onCompare={addToCompare} />}
+      {page === "player" && selectedPlayer && <PlayerDetails player={selectedPlayer} onBack={() => { setPage("players"); setSelectedPlayer(null); }} onCompare={addToCompare} />}
       <Footer />
     </div>
   );
