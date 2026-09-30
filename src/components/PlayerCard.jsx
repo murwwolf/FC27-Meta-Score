@@ -24,14 +24,18 @@ function getCountryCode(country) {
   return countryCodes[country] || "";
 }
 
-function PlayerCard({ player, onOpen, onCompare, rank }) {
+function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showCompareButton = true }) {
   const [imageFailed, setImageFailed] = useState(false);
   const isGK = player.position === "GK";
   const countryCode = getCountryCode(player.nation);
   const cardType = player.cardType || player.promoName || "Base";
 
   return (
-    <article className={`player-card${rank <= 3 ? ` rank-top-${rank}` : ""}`} data-meta-tier={player.tier} onClick={() => onOpen(player)}>
+    <article
+      className={`player-card${rank ? ` rank-top-${rank}` : ""}${compact ? " compact-card" : ""}`}
+      data-meta-tier={player.tier}
+      onClick={() => onOpen(player)}
+    >
       {rank ? <div className="player-rank">#{rank}</div> : null}
       <div className="card-top">
         <div className="rating">
@@ -116,16 +120,18 @@ function PlayerCard({ player, onOpen, onCompare, rank }) {
           )}
         </div>
 
-        <button
-          type="button"
-          className="reset-button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onCompare(player);
-          }}
-        >
-          COMPARE
-        </button>
+        {showCompareButton ? (
+          <button
+            type="button"
+            className="reset-button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onCompare(player);
+            }}
+          >
+            COMPARE
+          </button>
+        ) : null}
       </div>
     </article>
   );
