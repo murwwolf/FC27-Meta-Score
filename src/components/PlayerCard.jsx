@@ -34,7 +34,16 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
     <article
       className={`player-card${rank ? ` rank-top-${rank}` : ""}${compact ? " compact-card" : ""}`}
       data-meta-tier={player.tier}
+      tabIndex={0}
+      aria-label={`Open details for ${player.name}, ${player.position}, overall ${player.overall}, META ${player.metaScore}, ${player.tier} tier`}
       onClick={() => onOpen(player)}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen(player);
+        }
+      }}
     >
       {rank ? <div className="player-rank">#{rank}</div> : null}
       <div className="card-top">

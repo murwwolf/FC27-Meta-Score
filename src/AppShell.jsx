@@ -3,7 +3,8 @@ import "country-flag-icons/3x2/flags.css";
 import "./premium.css";
 import players from "./lib/playerData";
 import { calculateMetaScore, getTier } from "./lib/meta/metaScore";
-import PlayerCard from "./components/PlayerCard";
+import HomePage from "./components/HomePage";
+import MetaScorePage from "./components/MetaScorePage";
 import PlayersPage from "./components/PlayersPage";
 import RankingsPage from "./components/RankingsPage";
 import PlayerDetails from "./components/PlayerDetails";
@@ -119,31 +120,15 @@ function AppShell() {
       <div className="red-glow red-glow-two" />
       <Navbar page={page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
 
-      {page === "home" && <main>
-        <section className="hero home-hero">
-          <div className="hero-top"><div className="gold-line" /><div className="hero-label">FC27 ULTIMATE TEAM</div><div className="gold-line" /></div>
-          <div className="home-hero-copy">
-            <h1>FC27 <span>META SCORE</span></h1>
-            <h2>How META Is Your FC27 Player?</h2>
-            <p className="hero-subtitle">Explore 178 real Ultimate Team players. We evaluate position-specific attributes and in-game traits to produce a META score built for squad decisions.</p>
-            <div className="home-actions">
-              <button type="button" className="primary-action" onClick={() => setPage("players")}>EXPLORE PLAYERS <span aria-hidden="true">→</span></button>
-              <button type="button" className="secondary-action" onClick={() => setPage("rankings")}>VIEW RANKINGS <span aria-hidden="true">↗</span></button>
-            </div>
-          </div>
-          <div className="filters"><div className="filter-box search-box">
-            <input type="text" value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") setPage("players"); }} placeholder="Search for an FC27 player..." />
-            <button type="button" aria-label="Search players" onClick={() => setPage("players")}>SEARCH</button>
-          </div></div>
-        </section>
-        <section className="players-section home-featured">
-          <div className="section-header"><div><div className="section-label">THE CURRENT META</div><h2>TOP-RATED PLAYERS</h2></div>
-            <div className="database-counter"><span className="counter-number">{scoredPlayers.length}</span><span className="counter-text">PLAYERS TRACKED</span></div>
-            <button type="button" className="text-action" onClick={() => setPage("rankings")}>FULL RANKINGS <span aria-hidden="true">→</span></button>
-          </div>
-          <div className="players-grid">{[...scoredPlayers].sort((a, b) => b.metaScore - a.metaScore).slice(0, 3).map((player) => <PlayerCard key={player.id} player={player} onOpen={openPlayer} onCompare={addToCompare} />)}</div>
-        </section>
-      </main>}
+      {page === "home" && <HomePage
+        scoredPlayers={scoredPlayers}
+        search={search}
+        setSearch={setSearch}
+        onNavigate={setPage}
+        onOpen={openPlayer}
+        onCompare={addToCompare}
+      />}
+      {page === "meta-score" && <MetaScorePage players={scoredPlayers} onNavigate={setPage} onOpen={openPlayer} onCompare={addToCompare} />}
 
       {page === "players" && <PlayersPage
         players={filteredPlayers} search={search} setSearch={setSearch}

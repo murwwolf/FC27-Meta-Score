@@ -1,6 +1,7 @@
 ﻿function Navbar({ page, setPage, onHome }) {
   const navItems = [
     ["home", "HOME"],
+    ["meta-score", "META SCORE"],
     ["players", "PLAYERS"],
     ["rankings", "RANKINGS"],
     ["compare", "COMPARE"],
