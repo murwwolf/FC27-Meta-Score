@@ -6,7 +6,7 @@ export default function SplashScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false)
-    }, 2500)
+    }, 10000)
 
     return () => clearTimeout(timer)
   }, [])
@@ -134,3 +134,4 @@ export default function SplashScreen() {
     </div>
   )
 }
+
