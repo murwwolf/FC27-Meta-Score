@@ -1165,3 +1165,19 @@ footer {
   padding: 0 !important;
   white-space: nowrap !important;
 }
+
+/* FC27 META - iPhone PWA safe areas */
+html {
+  background: #0B0B0F;
+}
+
+body {
+  margin: 0;
+  background: #0B0B0F;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
