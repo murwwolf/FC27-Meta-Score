@@ -21,16 +21,6 @@ function getTierRanges() {
 }
 
 function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onCompare }) {
-  const databaseStats = useMemo(() => {
-    const countUnique = (key) => new Set(scoredPlayers.map((player) => player[key]).filter(Boolean)).size;
-    return [
-      { value: scoredPlayers.length, label: "PLAYERS" },
-      { value: countUnique("position"), label: "POSITIONS" },
-      { value: countUnique("club"), label: "CLUBS" },
-      { value: countUnique("nation"), label: "NATIONS" },
-    ];
-  }, [scoredPlayers]);
-
   const topPlayers = useMemo(() => [...scoredPlayers].sort((left, right) => {
     const scoreDifference = Number(right.metaScore || 0) - Number(left.metaScore || 0);
     if (scoreDifference) return scoreDifference;
@@ -39,7 +29,16 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
   }).slice(0, 5), [scoredPlayers]);
 
   const featuredPlayer = topPlayers[0] || null;
-  const tierRanges = useMemo(getTierRanges, []);
+  const highestRatedPlayer = useMemo(() => [...scoredPlayers].sort((left, right) => {
+    const overallDifference = Number(right.overall || 0) - Number(left.overall || 0);
+    if (overallDifference) return overallDifference;
+    const scoreDifference = Number(right.metaScore || 0) - Number(left.metaScore || 0);
+    return scoreDifference || String(left.name || "").localeCompare(String(right.name || ""));
+  })[0] || null, [scoredPlayers]);
+  const availablePositions = useMemo(() => new Set(
+    scoredPlayers.map((player) => String(player.position || "").trim().toUpperCase()).filter(Boolean)
+  ).size, [scoredPlayers]);
+  const tierRanges = useMemo(() => getTierRanges(), []);
 
   return (
     <main className="home-page">
@@ -47,14 +46,13 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
         <div className="home-hero-pitch" aria-hidden="true" />
         <div className="home-landing-copy">
           <div className="home-live-badge"><span className="status-dot" /> LIVE DATABASE <b>{scoredPlayers.length.toLocaleString()} PLAYERS</b></div>
-          <div className="hero-label home-kicker">FC27 ULTIMATE TEAM DATABASE</div>
+          <div className="hero-label home-kicker">FC27 ULTIMATE TEAM</div>
           <h1>FC27 <span>META</span></h1>
-          <h2>HOW META IS YOUR<br />FC27 PLAYER?</h2>
-          <p className="hero-subtitle">Explore the FC27 Ultimate Team database, discover the highest META scores, and compare your favourite players.</p>
+          <h2>How META Is Your<br />Player?</h2>
+          <p className="hero-subtitle">Discover how every player measures up with position-aware META ratings. Explore the database, find standout cards and compare your next squad picks.</p>
           <div className="home-actions">
             <button type="button" className="primary-action" onClick={() => onNavigate("players")}>EXPLORE PLAYERS <span aria-hidden="true">→</span></button>
             <button type="button" className="secondary-action" onClick={() => onNavigate("rankings")}>VIEW RANKINGS <span aria-hidden="true">↗</span></button>
-            <button type="button" className="secondary-action home-compare-action" onClick={() => onNavigate("compare")}>COMPARE PLAYERS <span aria-hidden="true">⇄</span></button>
           </div>
         </div>
         <div className="home-hero-index" aria-hidden="true">27</div>
@@ -68,44 +66,43 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
         </section>
       ) : (
         <>
-          <section className="home-database-stats" aria-label="Database statistics">
-            {databaseStats.filter((stat) => stat.label === "PLAYERS" || stat.value > 0).map((stat) => (
-              <div className="home-database-stat" key={stat.label}>
-                <strong>{stat.value.toLocaleString()}</strong>
-                <span>{stat.label}</span>
-              </div>
-            ))}
+          <section className="home-highlight-grid" aria-label="Database highlights">
+            <button type="button" className="home-highlight-card home-highlight-player" onClick={() => onOpen(featuredPlayer)} aria-label={`View top META-rated player, ${featuredPlayer.name}, META ${featuredPlayer.metaScore}`}>
+              <span className="home-highlight-label">TOP META-RATED PLAYER</span>
+              <strong>{featuredPlayer.name || "Not listed"}</strong>
+              <span className="home-highlight-bottom">
+                <span className="home-highlight-detail">{featuredPlayer.position || "—"} <i /> {featuredPlayer.tier || "—"} TIER</span>
+                <span className="home-highlight-score">{featuredPlayer.metaScore ?? "—"}<small>/100 META</small></span>
+              </span>
+              <span className="home-highlight-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" className="home-highlight-card home-highlight-player home-highlight-overall" onClick={() => onOpen(highestRatedPlayer)} aria-label={`View highest-rated player, ${highestRatedPlayer.name}, overall ${highestRatedPlayer.overall}`}>
+              <span className="home-highlight-label">HIGHEST-RATED PLAYER</span>
+              <strong>{highestRatedPlayer.name || "Not listed"}</strong>
+              <span className="home-highlight-bottom">
+                <span className="home-highlight-detail">{highestRatedPlayer.position || "—"} <i /> {highestRatedPlayer.tier || "—"} TIER</span>
+                <span className="home-highlight-score">{highestRatedPlayer.overall ?? "—"}<small>OVERALL</small></span>
+              </span>
+              <span className="home-highlight-arrow" aria-hidden="true">↗</span>
+            </button>
+            <div className="home-highlight-card">
+              <span className="home-highlight-label">PLAYERS ANALYSED</span>
+              <strong className="home-highlight-count">{scoredPlayers.length.toLocaleString()}</strong>
+              <span className="home-highlight-detail">PLAYER CARDS IN THE DATABASE</span>
+            </div>
+            <div className="home-highlight-card">
+              <span className="home-highlight-label">AVAILABLE POSITIONS</span>
+              <strong className="home-highlight-count">{availablePositions}</strong>
+              <span className="home-highlight-detail">UNIQUE PLAYING POSITIONS</span>
+            </div>
           </section>
 
           <section className="home-top-meta home-section">
             <header className="home-section-heading">
-              <div><span className="section-label">THE CURRENT META</span><h2>TOP META PLAYERS</h2></div>
-              <p>The highest-rated META players currently in the database.</p>
+              <div><span className="section-label">THE CURRENT META</span><h2>META LEADERBOARD</h2></div>
+              <p>Explore the leading META scores across the player database.</p>
               <button type="button" className="text-action" onClick={() => onNavigate("rankings")}>FULL RANKINGS <span aria-hidden="true">→</span></button>
             </header>
-
-            {featuredPlayer ? (
-              <div className="home-featured-player">
-                <div className="home-featured-card">
-                  <PlayerCard player={featuredPlayer} onOpen={onOpen} onCompare={onCompare} showCompareButton={false} />
-                </div>
-                <div className="home-featured-copy">
-                  <span className="home-featured-kicker">#1 META SCORE</span>
-                  <h3>{featuredPlayer.name || "Not listed"}</h3>
-                  <div className="home-featured-meta">
-                    <span>{featuredPlayer.position || "Not listed"}</span>
-                    <span>OVR {featuredPlayer.overall ?? "Not listed"}</span>
-                    <span>META {featuredPlayer.metaScore ?? "Not listed"}</span>
-                    <span>{featuredPlayer.tier || "Not listed"} TIER</span>
-                  </div>
-                  <dl>
-                    <div><dt>CLUB</dt><dd>{featuredPlayer.club || "Not listed"}</dd></div>
-                    <div><dt>NATION</dt><dd>{featuredPlayer.nation || "Not listed"}</dd></div>
-                  </dl>
-                  <button type="button" className="primary-action" onClick={() => onOpen(featuredPlayer)}>VIEW PLAYER <span aria-hidden="true">→</span></button>
-                </div>
-              </div>
-            ) : null}
 
             <div className="home-top-five">
               <div className="home-top-five-heading"><span>LEADERBOARD</span><span>01—{String(topPlayers.length).padStart(2, "0")}</span></div>
@@ -118,7 +115,7 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
           </section>
 
           <section className="home-quick-actions home-section" aria-label="Quick actions">
-            <header className="home-section-heading"><div><span className="section-label">BUILD YOUR NEXT SQUAD</span><h2>GO YOUR WAY</h2></div></header>
+            <header className="home-section-heading"><div><span className="section-label">BUILD YOUR NEXT SQUAD</span><h2>QUICK ACCESS</h2></div></header>
             <div className="home-action-grid">
               <button type="button" className="home-action-card action-players" onClick={() => onNavigate("players")}>
                 <span className="home-action-index">01</span><span className="home-action-arrow" aria-hidden="true">↗</span>
