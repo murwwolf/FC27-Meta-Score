@@ -47,11 +47,12 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
         <div className="home-landing-copy">
           <div className="home-live-badge"><span className="status-dot" /> LIVE DATABASE <b>{scoredPlayers.length.toLocaleString()} PLAYERS</b></div>
           <div className="hero-label home-kicker">FC27 ULTIMATE TEAM</div>
-          <h1>FC27 <span>META</span></h1>
+          <h1>FC27 <span>META SCORE</span></h1>
           <h2>HOW META IS YOUR<br />PLAYER?</h2>
-          <p className="hero-subtitle">Calculate, compare and discover the players built for the FC27 META.</p>
+          <p className="hero-subtitle">Evaluate FC27 players with our position-specific META SCORE methodology, using the attributes that matter most for each role.</p>
           <div className="home-actions">
-            <button type="button" className="primary-action" onClick={() => onNavigate("players")}>EXPLORE PLAYERS <span aria-hidden="true">→</span></button>
+            <button type="button" className="primary-action" onClick={() => document.getElementById("home-player-search")?.focus()}>SEARCH PLAYERS <span aria-hidden="true">⌕</span></button>
+            <button type="button" className="secondary-action" onClick={() => onNavigate("players")}>BROWSE PLAYERS <span aria-hidden="true">→</span></button>
             <button type="button" className="secondary-action" onClick={() => onNavigate("rankings")}>VIEW RANKINGS <span aria-hidden="true">↗</span></button>
           </div>
         </div>
@@ -68,7 +69,7 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
         <>
           <section className="home-top-meta home-section" aria-labelledby="home-featured-meta-title">
             <header className="home-section-heading">
-              <div><span className="section-label">THE CURRENT META</span><h2 id="home-featured-meta-title">FEATURED META PLAYERS</h2></div>
+              <div><span className="section-label">THE CURRENT META</span><h2 id="home-featured-meta-title">TOP META PLAYERS</h2></div>
               <p>Explore the leading META scores across the player database.</p>
               <button type="button" className="text-action" onClick={() => onNavigate("rankings")}>FULL RANKINGS <span aria-hidden="true">→</span></button>
             </header>

@@ -33,7 +33,7 @@ function MetaBreakdown({ player }) {
       <div className="meta-breakdown-head">
         <div>
           <span className="meta-engine-label">POSITION-SPECIFIC FC27 ENGINE</span>
-          <h3>HOW THIS SCORE IS BUILT</h3>
+          <h3>{player.position} POSITIONAL SCORE BREAKDOWN</h3>
           <p>Each attribute is weighted for {player.position}. {topAttribute[0]} has the greatest influence at {Math.round(topAttribute[2] * 100)}%; gameplay and position context are then applied before the {adjustedScoreShare}% META / {overallShare}% OVR blend.</p>
         </div>
         <div className="meta-engine-score">

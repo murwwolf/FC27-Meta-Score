@@ -14,6 +14,8 @@ function PlayerImage({ player, className = "" }) {
         <img
           src={player.image}
           alt=""
+          loading="lazy"
+          decoding="async"
           onError={() => setImageFailed(true)}
         />
       ) : (

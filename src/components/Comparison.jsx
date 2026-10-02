@@ -1,13 +1,32 @@
 import { useState } from "react";
+import { getPositionWeights } from "../lib/meta/metaScore";
 
-const ATTRIBUTE_ROWS = [
-  ["PAC", "pace"],
-  ["SHO", "shooting"],
-  ["PAS", "passing"],
-  ["DRI", "dribbling"],
-  ["DEF", "defending"],
-  ["PHY", "physical"],
-];
+const ATTRIBUTE_FIELDS = {
+  Pace: "pace",
+  Shooting: "shooting",
+  Passing: "passing",
+  Dribbling: "dribbling",
+  Defending: "defending",
+  Physical: "physical",
+  Diving: "pace",
+  Handling: "shooting",
+  Kicking: "passing",
+  Reflexes: "dribbling",
+  Positioning: "physical",
+};
+const ATTRIBUTE_CODES = {
+  Pace: "PAC",
+  Shooting: "SHO",
+  Passing: "PAS",
+  Dribbling: "DRI",
+  Defending: "DEF",
+  Physical: "PHY",
+  Diving: "DIV",
+  Handling: "HAN",
+  Kicking: "KIC",
+  Reflexes: "REF",
+  Positioning: "POS",
+};
 
 function numericValue(value) {
   if (value === null || value === undefined || String(value).trim() === "") return null;
@@ -21,9 +40,18 @@ function formatDifference(firstValue, secondValue) {
 }
 
 function Comparison({ first, second, onOpen, onSwap }) {
-  const availableAttributes = ATTRIBUTE_ROWS.filter(([, key]) =>
-    numericValue(first[key]) !== null && numericValue(second[key]) !== null
-  );
+  const firstWeights = getPositionWeights(first);
+  const secondWeights = getPositionWeights(second);
+  const availableAttributes = Object.entries(firstWeights)
+    .map(([label]) => ({
+      label,
+      code: ATTRIBUTE_CODES[label] || label,
+      key: ATTRIBUTE_FIELDS[label],
+      pairedLabel: Object.keys(secondWeights).find((candidate) => ATTRIBUTE_FIELDS[candidate] === ATTRIBUTE_FIELDS[label]),
+    }))
+    .filter(({ key, pairedLabel }) => (
+      key && pairedLabel && numericValue(first[key]) !== null && numericValue(second[key]) !== null
+    ));
   const metaDifference = numericValue(first.metaScore) - numericValue(second.metaScore);
 
   return (
@@ -67,7 +95,7 @@ function Comparison({ first, second, onOpen, onSwap }) {
 
         {availableAttributes.length > 0 ? (
           <div className="comparison-stat-panel">
-            {availableAttributes.map(([label, key]) => {
+            {availableAttributes.map(({ label, code, key, pairedLabel }) => {
               const firstValue = numericValue(first[key]);
               const secondValue = numericValue(second[key]);
               const difference = firstValue - secondValue;
@@ -80,7 +108,9 @@ function Comparison({ first, second, onOpen, onSwap }) {
                     isWinner={difference > 0}
                   />
                   <div className="comparison-stat-center">
-                    <span className="comparison-stat-name">{label}</span>
+                    <span className="comparison-stat-name">
+                      {label === pairedLabel ? code : `${code} / ${ATTRIBUTE_CODES[pairedLabel] || pairedLabel}`}
+                    </span>
                     <span className={`comparison-stat-diff${difference === 0 ? " is-tied" : ""}`}>
                       {formatDifference(firstValue, secondValue)}
                     </span>
@@ -159,7 +189,7 @@ function ComparisonPlayer({ player, label, onOpen }) {
     <article className="comparison-player">
       <div className="comparison-player-image">
         {player.image && !imageFailed ? (
-          <img src={player.image} alt={player.name} onError={() => setImageFailed(true)} />
+          <img src={player.image} alt={player.name} loading="lazy" decoding="async" onError={() => setImageFailed(true)} />
         ) : (
           <span aria-label={`${player.name} image unavailable`}>{player.name?.charAt(0) || "?"}</span>
         )}

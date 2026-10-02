@@ -16,9 +16,16 @@ function toPlayStyles(value) {
   return typeof value === "string" && value.trim() ? [value] : [];
 }
 
+function getBaseAttributes(player) {
+  return player.position === "GK"
+    ? [["DIV", player.pace], ["HAN", player.shooting], ["KIC", player.passing], ["REF", player.dribbling], ["SPD", player.defending], ["POS", player.physical]]
+    : [["PAC", player.pace], ["SHO", player.shooting], ["PAS", player.passing], ["DRI", player.dribbling], ["DEF", player.defending], ["PHY", player.physical]];
+}
+
 function PlayerDetails({ player, backLabel = "PLAYERS", onBack, onCompare }) {
   const [shareOpen, setShareOpen] = useState(false);
   const [portraitFailed, setPortraitFailed] = useState(false);
+  const baseAttributes = getBaseAttributes(player);
   const playStyles = toPlayStyles(player.playStyles || player.playstyles);
   const playStylesPlus = toPlayStyles(player.playStylesPlus || player.playstylesPlus || player.playStylePlus);
   const workRate = [player.attackingWorkRate, player.defensiveWorkRate].filter(Boolean).join(" / ");
@@ -46,6 +53,7 @@ function PlayerDetails({ player, backLabel = "PLAYERS", onBack, onCompare }) {
             <img
               src={player.image}
               alt={`${player.name} player image`}
+              decoding="async"
               onError={() => setPortraitFailed(true)}
             />
           ) : (
@@ -93,7 +101,7 @@ function PlayerDetails({ player, backLabel = "PLAYERS", onBack, onCompare }) {
               <div><small>PLAYER ATTRIBUTES</small><h2 id="profile-stats-title">BASE STATS</h2></div>
             </div>
             <div className="profile-stats-panel">
-              {[["PAC", player.pace], ["SHO", player.shooting], ["PAS", player.passing], ["DRI", player.dribbling], ["DEF", player.defending], ["PHY", player.physical]].map(([label, value]) => (
+              {baseAttributes.map(([label, value]) => (
                 <ProfileStat key={label} label={label} value={value} />
               ))}
             </div>
@@ -102,7 +110,7 @@ function PlayerDetails({ player, backLabel = "PLAYERS", onBack, onCompare }) {
           <section className="profile-content-section profile-analysis-section" aria-labelledby="profile-analysis-title">
             <div className="profile-section-heading">
               <span>02</span>
-              <div><small>POSITION-AWARE RATING</small><h2 id="profile-analysis-title">META BREAKDOWN</h2></div>
+              <div><small>POSITION-AWARE RATING</small><h2 id="profile-analysis-title">META PROFILE</h2></div>
             </div>
             <div className="profile-analysis-score">
               <div><span>OVERALL META SCORE</span><strong>{player.metaScore}<small>/100</small></strong></div>

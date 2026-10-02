@@ -1,6 +1,5 @@
 import { useState } from "react";
 import usePlayerCollections from "./usePlayerCollections";
-import Stat from "./Stat";
 
 const countryCodes = {
   England:"GB-ENG", Scotland:"GB-SCT", Wales:"GB-WLS", "Northern Ireland":"GB-NIR",
@@ -28,7 +27,6 @@ function getCountryCode(country) {
 function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showCompareButton = true }) {
   const [imageFailed, setImageFailed] = useState(false);
   const collections = usePlayerCollections();
-  const isGK = player.position === "GK";
   const countryCode = getCountryCode(player.nation);
   const cardType = player.cardType || player.promoName || "Not listed";
   const isFavourite = collections?.isFavourite(player.id) || false;
@@ -85,10 +83,12 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
             className="player-image"
             src={player.image}
             alt={player.name}
+            loading="lazy"
+            decoding="async"
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <div className="image-placeholder">
+          <div className="image-placeholder" role="img" aria-label={`${player.name} image unavailable`}>
             {player.name.charAt(0)}
           </div>
         )}
@@ -124,30 +124,6 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
         <div className="card-type-line">
           <span>{cardType}</span>
           {player.promoName && player.promoName !== cardType ? <span>{player.promoName}</span> : null}
-        </div>
-
-        <div className="stats-title">BASE ATTRIBUTES</div>
-
-        <div className="stats-grid">
-          {isGK ? (
-            <>
-              <Stat label="DIV" value={player.pace} />
-              <Stat label="HAN" value={player.shooting} />
-              <Stat label="KICK" value={player.passing} />
-              <Stat label="REF" value={player.dribbling} />
-              <Stat label="SPD" value={player.defending} />
-              <Stat label="POS" value={player.physical} />
-            </>
-          ) : (
-            <>
-              <Stat label="PAC" value={player.pace} />
-              <Stat label="SHO" value={player.shooting} />
-              <Stat label="PAS" value={player.passing} />
-              <Stat label="DRI" value={player.dribbling} />
-              <Stat label="DEF" value={player.defending} />
-              <Stat label="PHY" value={player.physical} />
-            </>
-          )}
         </div>
 
         {showCompareButton ? (

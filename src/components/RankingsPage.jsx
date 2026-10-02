@@ -124,6 +124,8 @@ function RankingsPage({ players, onOpen }) {
               <img
                 src={player.image}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 onError={(event) => {
                   event.currentTarget.style.display = "none";
                   event.currentTarget.parentElement.classList.add("fallback");
