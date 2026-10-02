@@ -38,7 +38,7 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
       className={`player-card${rank ? ` rank-top-${rank}` : ""}${compact ? " compact-card" : ""}`}
       data-meta-tier={player.tier}
       tabIndex={0}
-      aria-label={`Open details for ${player.name}, ${player.position}, overall ${player.overall}, META ${player.metaScore}, ${player.tier} tier`}
+      aria-label={`Open details for ${player.name}, ${player.position}, overall ${player.overall}, META Score ${player.metaScore}, ${player.tier} tier`}
       onClick={() => onOpen(player)}
       onKeyDown={(event) => {
         if (event.target !== event.currentTarget) return;
@@ -94,7 +94,7 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
         )}
 
         <div className="meta-score">
-          <span>META</span>
+          <span>META SCORE</span>
           <strong>{player.metaScore}</strong>
           <small>{player.tier} TIER</small>
         </div>

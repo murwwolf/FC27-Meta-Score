@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { getPositionWeights, getTier, getTierInfo } from "../lib/meta/metaScore";
+import { getPositionWeights, getTier, getTierInfo, META_SCORE_CONFIG } from "../lib/meta/metaScore";
 import MetaBreakdown from "./MetaBreakdown";
 import PlayerCard from "./PlayerCard";
 
@@ -28,7 +28,7 @@ const ATTRIBUTE_DESCRIPTIONS = {
 
 function buildTierRanges() {
   const scoresByTier = new Map();
-  for (let score = 0; score <= 100; score += 1) {
+  for (let score = META_SCORE_CONFIG.minimumScore; score <= META_SCORE_CONFIG.maximumScore; score += 1) {
     const tier = getTier(score);
     const scores = scoresByTier.get(tier) || [];
     scores.push(score);
@@ -39,7 +39,7 @@ function buildTierRanges() {
     .map(([tier, scores]) => ({
       tier,
       minScore: scores[0],
-      range: scores[0] === 0 ? `Below ${scores[scores.length - 1] + 1}` : `${scores[0]}–${scores[scores.length - 1]}`,
+      range: `${scores[0]}–${scores[scores.length - 1]}`,
       ...getTierInfo(scores[0]),
     }))
     .sort((left, right) => right.minScore - left.minScore)
@@ -116,7 +116,7 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
           <h1>META <span>METHODOLOGY</span></h1>
           <h2>See exactly how FC27 META SCORE evaluates every player.</h2>
           <p>The META score is a position-aware rating designed to reflect which attributes matter most for a player's role. It is not simply the player's Overall rating.</p>
-          <div className="meta-explainer-badges"><span>POSITION-WEIGHTED SYSTEM</span><span>0–100 SCORE</span><span>WEBSITE MODEL · NOT OFFICIAL EA</span></div>
+          <div className="meta-explainer-badges"><span>POSITION-WEIGHTED SYSTEM</span><span>{META_SCORE_CONFIG.minimumScore}–{META_SCORE_CONFIG.maximumScore} SCORE</span><span>WEBSITE MODEL · NOT OFFICIAL EA</span></div>
         </div>
         <div className="meta-hero-mark" aria-hidden="true">M</div>
       </header>
@@ -130,6 +130,26 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
           <p><strong>The same Overall can produce different META scores</strong> because the positions and underlying attributes differ. The score shown here is the existing scoring system used throughout the app.</p>
         </div>
         <aside className="meta-model-note"><span>IMPORTANT CONTEXT</span><strong>A model, not an official EA rating.</strong><p>The score is a comparison aid based on this site's published approach, not a universal measure of player quality.</p></aside>
+      </section>
+
+      <section className="meta-method-overview" aria-labelledby="meta-method-overview-title">
+        <header className="meta-section-heading">
+          <div><span className="meta-section-kicker">THE SHORT VERSION</span><h2 id="meta-method-overview-title">META SCORE IN FOUR STEPS</h2></div>
+          <p>One position-aware score, using the same rules as the player calculator.</p>
+        </header>
+        <ol className="meta-method-steps">
+          <li><span>01</span><h3>Position sets the model</h3><p>Each position uses a scoring profile suited to that role. Goalkeepers have their own model.</p></li>
+          <li><span>02</span><h3>Attributes get weighted</h3><p>Relevant attributes contribute in different amounts. Pick a position below to see the exact weights.</p></li>
+          <li>
+            <span>03</span><h3>Adjustments form the score</h3>
+            <p>Gameplay and eligible height adjustments are added. When Overall is available, the adjusted score is blended with Overall using the existing {Math.round(META_SCORE_CONFIG.adjustedScoreShare * 100)}% / {Math.round(META_SCORE_CONFIG.overallShare * 100)}% split, then rounded and capped at {META_SCORE_CONFIG.minimumScore}–{META_SCORE_CONFIG.maximumScore}.</p>
+          </li>
+          <li>
+            <span>04</span><h3>The score gets a META tier</h3>
+            <p>The calculator assigns a tier from the final score. Current bands:</p>
+            <div className="meta-method-tier-list">{tierRanges.map(({ tier, range }) => <span key={tier}><strong>{tier}</strong> {range}</span>)}</div>
+          </li>
+        </ol>
       </section>
 
       <section className="meta-weights-section">
@@ -163,8 +183,8 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
         ) : null}
         <div className="meta-final-formula">
           <span>FINAL SCORE FLOW</span>
-          <p>Position-weighted base score + gameplay bonus + eligible height context bonus, then a small <strong>8% Overall anchor</strong>, rounded and clamped to 0–100.</p>
-          <small>When Overall is available, the adjusted score is blended as 92% adjusted position score + 8% Overall.</small>
+          <p>Position-weighted base score + gameplay bonus + eligible height context bonus, then the existing <strong>{Math.round(META_SCORE_CONFIG.overallShare * 100)}% Overall anchor</strong>, rounded and clamped to {META_SCORE_CONFIG.minimumScore}–{META_SCORE_CONFIG.maximumScore}.</p>
+          <small>When Overall is available, the adjusted score is blended as {Math.round(META_SCORE_CONFIG.adjustedScoreShare * 100)}% adjusted position score + {Math.round(META_SCORE_CONFIG.overallShare * 100)}% Overall.</small>
         </div>
         <div className="meta-modifier-grid">
           <article><span>GAMEPLAY BONUS</span><p>Skill Moves, Weak Foot, and high work rates contribute small bonuses. The effect is adjusted by position; goalkeepers receive no gameplay bonus.</p></article>

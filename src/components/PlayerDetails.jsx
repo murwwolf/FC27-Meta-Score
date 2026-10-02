@@ -16,8 +16,9 @@ function toPlayStyles(value) {
   return typeof value === "string" && value.trim() ? [value] : [];
 }
 
-function PlayerDetails({ player, onBack, onCompare }) {
+function PlayerDetails({ player, backLabel = "PLAYERS", onBack, onCompare }) {
   const [shareOpen, setShareOpen] = useState(false);
+  const [portraitFailed, setPortraitFailed] = useState(false);
   const playStyles = toPlayStyles(player.playStyles || player.playstyles);
   const playStylesPlus = toPlayStyles(player.playStylesPlus || player.playstylesPlus || player.playStylePlus);
   const workRate = [player.attackingWorkRate, player.defensiveWorkRate].filter(Boolean).join(" / ");
@@ -31,7 +32,7 @@ function PlayerDetails({ player, onBack, onCompare }) {
           className="clear-button"
           onClick={onBack}
         >
-          ← BACK TO PLAYERS
+          ← BACK TO {backLabel}
         </button>
 
         <div className="player-details-label">
@@ -39,42 +40,53 @@ function PlayerDetails({ player, onBack, onCompare }) {
         </div>
       </div>
 
+      <header className="profile-summary-panel">
+        <div className="profile-summary-portrait" aria-hidden={!player.image || portraitFailed}>
+          {player.image && !portraitFailed ? (
+            <img
+              src={player.image}
+              alt={`${player.name} player image`}
+              onError={() => setPortraitFailed(true)}
+            />
+          ) : (
+            <span>{player.name?.charAt(0) || "?"}</span>
+          )}
+        </div>
+        <div className="profile-summary-copy">
+          <div className="profile-kicker">PLAYER DOSSIER</div>
+          <h1>{player.name}</h1>
+          <div className="profile-meta-line">
+            <span className="profile-position-badge">{player.position}</span>
+            <span>{player.club}</span>
+            <span>{player.league}</span>
+            <span>{player.nation}</span>
+          </div>
+        </div>
+        <div className="profile-score-lockup" data-meta-tier={player.tier}>
+          <span>META SCORE</span>
+          <strong>{player.metaScore}<small>/100</small></strong>
+          <b>{player.tier} TIER</b>
+        </div>
+        <div className="profile-summary-footer">
+          <span>OVERALL <strong>{player.overall}</strong></span>
+          <span>POSITION <strong>{player.position}</strong></span>
+          <div className="profile-action-buttons">
+            <button type="button" className="profile-share-button" onClick={() => setShareOpen(true)}>
+              <span aria-hidden="true">↗</span> SHARE PLAYER
+            </button>
+            <button type="button" className="profile-compare-button" onClick={() => onCompare(player)}>
+              ADD TO COMPARE
+            </button>
+          </div>
+        </div>
+      </header>
+
       <div className="player-profile-layout">
         <aside className="player-details-card-column" aria-label={`${player.name} player card`}>
           <PlayerCard player={player} onOpen={() => {}} onCompare={onCompare} />
         </aside>
 
         <div className="player-profile-main">
-          <header className="profile-summary-panel">
-            <div className="profile-summary-copy">
-              <div className="profile-kicker">{player.position} / PLAYER DOSSIER</div>
-              <h1>{player.name}</h1>
-              <div className="profile-meta-line">
-                <span>{player.position}</span>
-                <span>{player.club}</span>
-                <span>{player.league}</span>
-                <span>{player.nation}</span>
-              </div>
-            </div>
-            <div className="profile-score-lockup" data-meta-tier={player.tier}>
-              <span>META SCORE</span>
-              <strong>{player.metaScore}<small>/100</small></strong>
-              <b>{player.tier} TIER</b>
-            </div>
-            <div className="profile-summary-footer">
-              <span>OVERALL <strong>{player.overall}</strong></span>
-              <span>POSITION <strong>{player.position}</strong></span>
-              <div className="profile-action-buttons">
-                <button type="button" className="profile-share-button" onClick={() => setShareOpen(true)}>
-                  <span aria-hidden="true">↗</span> SHARE PLAYER
-                </button>
-                <button type="button" className="profile-compare-button" onClick={() => onCompare(player)}>
-                  ADD TO COMPARE
-                </button>
-              </div>
-            </div>
-          </header>
-
           <section className="profile-content-section" aria-labelledby="profile-stats-title">
             <div className="profile-section-heading">
               <span>01</span>
@@ -90,7 +102,7 @@ function PlayerDetails({ player, onBack, onCompare }) {
           <section className="profile-content-section profile-analysis-section" aria-labelledby="profile-analysis-title">
             <div className="profile-section-heading">
               <span>02</span>
-              <div><small>POSITION-AWARE RATING</small><h2 id="profile-analysis-title">META ANALYSIS</h2></div>
+              <div><small>POSITION-AWARE RATING</small><h2 id="profile-analysis-title">META BREAKDOWN</h2></div>
             </div>
             <div className="profile-analysis-score">
               <div><span>OVERALL META SCORE</span><strong>{player.metaScore}<small>/100</small></strong></div>
@@ -151,5 +163,3 @@ function PlayerDetails({ player, onBack, onCompare }) {
 }
 
 export default PlayerDetails;
-
-

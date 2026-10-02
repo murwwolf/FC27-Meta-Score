@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const ATTRIBUTE_ROWS = [
   ["PAC", "pace"],
   ["SHO", "shooting"],
@@ -27,7 +29,7 @@ function Comparison({ first, second, onOpen, onSwap }) {
   return (
     <section className="comparison-area" aria-label="Player comparison">
       <div className="comparison-hero">
-        <ComparisonPlayer player={first} label="PLAYER A" onOpen={onOpen} />
+        <ComparisonPlayer key={first.id} player={first} label="PLAYER A" onOpen={onOpen} />
 
         <div className="comparison-center">
           <span className="comparison-versus" aria-hidden="true">VS</span>
@@ -36,7 +38,7 @@ function Comparison({ first, second, onOpen, onSwap }) {
           </button>
         </div>
 
-        <ComparisonPlayer player={second} label="PLAYER B" onOpen={onOpen} />
+        <ComparisonPlayer key={second.id} player={second} label="PLAYER B" onOpen={onOpen} />
       </div>
 
       <section className="comparison-meta-feature" aria-labelledby="comparison-meta-heading">
@@ -151,21 +153,27 @@ function SummaryCard({ label, firstValue, secondValue }) {
 }
 
 function ComparisonPlayer({ player, label, onOpen }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   return (
     <article className="comparison-player">
       <div className="comparison-player-image">
-        {player.image ? (
-          <img src={player.image} alt={player.name} />
+        {player.image && !imageFailed ? (
+          <img src={player.image} alt={player.name} onError={() => setImageFailed(true)} />
         ) : (
-          <span>{player.name?.charAt(0) || "?"}</span>
+          <span aria-label={`${player.name} image unavailable`}>{player.name?.charAt(0) || "?"}</span>
         )}
       </div>
       <div className="comparison-player-info">
         <span className="comparison-player-label">{label}</span>
         <strong>{player.name}</strong>
-        <span>{player.position} <i>•</i> OVR {player.overall}</span>
+        <span className="comparison-player-overall">{player.position} <i>•</i> OVR {player.overall}</span>
         <small>{player.club}</small>
-        <small>META {player.metaScore} <i>•</i> {player.tier} TIER</small>
+        <div className="comparison-player-meta">
+          <span>META SCORE</span>
+          <strong>{player.metaScore}<small>/100</small></strong>
+          <em>{player.tier} TIER</em>
+        </div>
         <button type="button" className="comparison-profile-button" onClick={() => onOpen(player)}>
           VIEW PLAYER PROFILE
         </button>

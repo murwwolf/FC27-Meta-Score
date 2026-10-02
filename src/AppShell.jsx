@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import "country-flag-icons/3x2/flags.css";
 import "./premium.css";
 import players from "./lib/playerData";
@@ -29,9 +29,19 @@ const getOptions = (players, key) => ["All", ...new Set(players.map((player) => 
   .sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b));
 const POSITION_ORDER = ["ST", "CF", "LW", "RW", "LM", "RM", "CAM", "CM", "CDM", "LB", "LWB", "RB", "RWB", "CB", "GK"];
 const normalizeSearch = (value) => String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const PAGE_LABELS = {
+  home: "HOME",
+  players: "PLAYERS",
+  "meta-finder": "META FINDER",
+  favourites: "FAVOURITES",
+  rankings: "RANKINGS",
+  compare: "COMPARE",
+  "meta-score": "METHODOLOGY",
+};
 
 function AppShell() {
   const [page, setPage] = useState("home");
+  const [returnPage, setReturnPage] = useState("players");
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState("All");
   const [tier, setTier] = useState("All");
@@ -53,6 +63,14 @@ function AppShell() {
     const metaScore = calculateMetaScore(player);
     return { ...player, metaScore, tier: getTier(metaScore) };
   }), []);
+
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    if (window.getComputedStyle(root).scrollBehavior === "auto") window.scrollTo(0, 0);
+    root.style.scrollBehavior = previousScrollBehavior;
+  }, [page]);
 
   useEffect(() => {
     writePlayerReferences(FAVOURITES_STORAGE_KEY, favouriteIds);
@@ -109,7 +127,7 @@ function AppShell() {
     const sortDirection = direction === "asc" ? -1 : 1;
     return result.sort((left, right) => {
       const primary = sortField === "name"
-        ? String(left.name || "").localeCompare(String(right.name || "")) * sortDirection
+        ? String(left.name || "").localeCompare(String(right.name || "")) * (direction === "asc" ? 1 : -1)
         : (Number(right[sortField] || 0) - Number(left[sortField] || 0)) * sortDirection;
       if (primary !== 0) return primary;
       const overall = Number(right.overall || 0) - Number(left.overall || 0);
@@ -129,6 +147,7 @@ function AppShell() {
   const overallOptions = useMemo(() => [...new Set(scoredPlayers.map((player) => Number(player.overall)).filter((rating) => Number.isFinite(rating) && rating >= 80))].sort((a, b) => a - b), [scoredPlayers]);
 
   function openPlayer(player) {
+    setReturnPage(page === "player" ? returnPage : page);
     setRecentPlayerIds((current) => [
       player.id,
       ...current.filter((id) => String(id) !== String(player.id)),
@@ -172,7 +191,7 @@ function AppShell() {
           <div className="background-grid" />
           <div className="red-glow red-glow-one" />
           <div className="red-glow red-glow-two" />
-          <Navbar page={page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
+          <Navbar page={page === "player" ? returnPage : page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
 
         {page === "home" && <HomePage
           scoredPlayers={scoredPlayers}
@@ -200,7 +219,12 @@ function AppShell() {
         {page === "favourites" && <FavouritesPage players={favouritePlayers} onOpen={openPlayer} onCompare={addToCompare} onNavigate={setPage} />}
         {page === "rankings" && <RankingsPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
         {page === "compare" && <ComparePage players={comparePlayers} allPlayers={scoredPlayers} onSelect={selectComparePlayer} onRemove={removeComparePlayer} onSwap={swapComparePlayers} onReset={resetComparePlayers} onOpen={openPlayer} />}
-        {page === "player" && selectedPlayer && <PlayerDetails player={selectedPlayer} onBack={() => { setPage("players"); setSelectedPlayer(null); }} onCompare={addToCompare} />}
+        {page === "player" && selectedPlayer && <PlayerDetails
+          player={selectedPlayer}
+          backLabel={PAGE_LABELS[returnPage] || PAGE_LABELS.players}
+          onBack={() => { setPage(returnPage); setSelectedPlayer(null); }}
+          onCompare={addToCompare}
+        />}
           <Footer />
         </div>
       </>

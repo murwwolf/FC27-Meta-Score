@@ -112,6 +112,39 @@ const DEFENDERS = [
   "CB"
 ];
 
+const POSITION_WEIGHTS = {
+  goalkeeper: { diving: 0.28, reflexes: 0.28, positioning: 0.19, handling: 0.17, kicking: 0.08 },
+  striker: { shooting: 0.32, pace: 0.24, dribbling: 0.20, physical: 0.14, passing: 0.10 },
+  wide: { dribbling: 0.28, pace: 0.26, shooting: 0.20, passing: 0.16, physical: 0.10 },
+  attackingMid: { passing: 0.28, dribbling: 0.27, shooting: 0.19, pace: 0.14, physical: 0.07, defending: 0.05 },
+  centralMid: { passing: 0.25, dribbling: 0.21, defending: 0.18, physical: 0.15, pace: 0.12, shooting: 0.09 },
+  defensiveMid: { defending: 0.31, passing: 0.25, physical: 0.19, dribbling: 0.12, pace: 0.09, shooting: 0.04 },
+  fullback: { defending: 0.27, pace: 0.25, passing: 0.18, dribbling: 0.16, physical: 0.10, shooting: 0.04 },
+  centreBack: { defending: 0.40, physical: 0.25, pace: 0.18, dribbling: 0.08, passing: 0.07, shooting: 0.02 },
+  generic: { pace: 0.17, shooting: 0.17, passing: 0.17, dribbling: 0.17, defending: 0.16, physical: 0.16 },
+};
+
+const POSITION_WEIGHT_LABELS = {
+  pace: "Pace",
+  shooting: "Shooting",
+  passing: "Passing",
+  dribbling: "Dribbling",
+  defending: "Defending",
+  physical: "Physical",
+  diving: "Diving",
+  handling: "Handling",
+  kicking: "Kicking",
+  reflexes: "Reflexes",
+  positioning: "Positioning",
+};
+
+export const META_SCORE_CONFIG = Object.freeze({
+  adjustedScoreShare: 0.92,
+  overallShare: 0.08,
+  minimumScore: 0,
+  maximumScore: 100,
+});
+
 // ============================================================
 // GK SCORE
 // ============================================================
@@ -144,11 +177,11 @@ const calculateGKScore = (player) => {
   const positioning = clamp(player.physical);
 
   const baseScore =
-    diving * 0.28 +
-    reflexes * 0.28 +
-    positioning * 0.19 +
-    handling * 0.17 +
-    kicking * 0.08;
+    diving * POSITION_WEIGHTS.goalkeeper.diving +
+    reflexes * POSITION_WEIGHTS.goalkeeper.reflexes +
+    positioning * POSITION_WEIGHTS.goalkeeper.positioning +
+    handling * POSITION_WEIGHTS.goalkeeper.handling +
+    kicking * POSITION_WEIGHTS.goalkeeper.kicking;
 
   /*
     Small speed adjustment.
@@ -183,13 +216,7 @@ const calculateStrikerScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    shooting: 0.32,
-    pace: 0.24,
-    dribbling: 0.20,
-    physical: 0.14,
-    passing: 0.10
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.striker);
 };
 
 // ============================================================
@@ -206,13 +233,7 @@ const calculateWideScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    dribbling: 0.28,
-    pace: 0.26,
-    shooting: 0.20,
-    passing: 0.16,
-    physical: 0.10
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.wide);
 };
 
 // ============================================================
@@ -229,14 +250,7 @@ const calculateCAMScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    passing: 0.28,
-    dribbling: 0.27,
-    shooting: 0.19,
-    pace: 0.14,
-    physical: 0.07,
-    defending: 0.05
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.attackingMid);
 };
 
 // ============================================================
@@ -253,14 +267,7 @@ const calculateCMScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    passing: 0.25,
-    dribbling: 0.21,
-    defending: 0.18,
-    physical: 0.15,
-    pace: 0.12,
-    shooting: 0.09
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.centralMid);
 };
 
 // ============================================================
@@ -277,14 +284,7 @@ const calculateCDMScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    defending: 0.31,
-    passing: 0.25,
-    physical: 0.19,
-    dribbling: 0.12,
-    pace: 0.09,
-    shooting: 0.04
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.defensiveMid);
 };
 
 // ============================================================
@@ -301,14 +301,7 @@ const calculateFullbackScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    defending: 0.27,
-    pace: 0.25,
-    passing: 0.18,
-    dribbling: 0.16,
-    physical: 0.10,
-    shooting: 0.04
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.fullback);
 };
 
 // ============================================================
@@ -325,14 +318,7 @@ const calculateCBScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    defending: 0.40,
-    physical: 0.25,
-    pace: 0.18,
-    dribbling: 0.08,
-    passing: 0.07,
-    shooting: 0.02
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.centreBack);
 };
 
 // ============================================================
@@ -349,14 +335,7 @@ const calculateGenericScore = (player) => {
     physical: player.physical
   };
 
-  return weightedAverage(stats, {
-    pace: 0.17,
-    shooting: 0.17,
-    passing: 0.17,
-    dribbling: 0.17,
-    defending: 0.16,
-    physical: 0.16
-  });
+  return weightedAverage(stats, POSITION_WEIGHTS.generic);
 };
 
 // ============================================================
@@ -403,18 +382,18 @@ const getPositionScore = (player) => {
 
 export const getPositionWeights = (player) => {
   const position = String(player?.position || "").toUpperCase();
+  let weights = POSITION_WEIGHTS.generic;
 
-  if (position === "GK") {
-    return { Diving: 0.28, Reflexes: 0.28, Positioning: 0.19, Handling: 0.17, Kicking: 0.08 };
-  }
-  if (ATTACKERS.includes(position)) return { Shooting: 0.32, Pace: 0.24, Dribbling: 0.20, Physical: 0.14, Passing: 0.10 };
-  if (WIDE_ATTACKERS.includes(position)) return { Dribbling: 0.28, Pace: 0.26, Shooting: 0.20, Passing: 0.16, Physical: 0.10 };
-  if (ATTACKING_MIDS.includes(position)) return { Passing: 0.28, Dribbling: 0.27, Shooting: 0.19, Pace: 0.14, Physical: 0.07, Defending: 0.05 };
-  if (CENTRAL_MIDS.includes(position)) return { Passing: 0.25, Dribbling: 0.21, Defending: 0.18, Physical: 0.15, Pace: 0.12, Shooting: 0.09 };
-  if (DEFENSIVE_MIDS.includes(position)) return { Defending: 0.31, Passing: 0.25, Physical: 0.19, Dribbling: 0.12, Pace: 0.09, Shooting: 0.04 };
-  if (FULLBACKS.includes(position)) return { Defending: 0.27, Pace: 0.25, Passing: 0.18, Dribbling: 0.16, Physical: 0.10, Shooting: 0.04 };
-  if (DEFENDERS.includes(position)) return { Defending: 0.40, Physical: 0.25, Pace: 0.18, Dribbling: 0.08, Passing: 0.07, Shooting: 0.02 };
-  return { Pace: 0.17, Shooting: 0.17, Passing: 0.17, Dribbling: 0.17, Defending: 0.16, Physical: 0.16 };
+  if (position === "GK") weights = POSITION_WEIGHTS.goalkeeper;
+  else if (ATTACKERS.includes(position)) weights = POSITION_WEIGHTS.striker;
+  else if (WIDE_ATTACKERS.includes(position)) weights = POSITION_WEIGHTS.wide;
+  else if (ATTACKING_MIDS.includes(position)) weights = POSITION_WEIGHTS.attackingMid;
+  else if (CENTRAL_MIDS.includes(position)) weights = POSITION_WEIGHTS.centralMid;
+  else if (DEFENSIVE_MIDS.includes(position)) weights = POSITION_WEIGHTS.defensiveMid;
+  else if (FULLBACKS.includes(position)) weights = POSITION_WEIGHTS.fullback;
+  else if (DEFENDERS.includes(position)) weights = POSITION_WEIGHTS.centreBack;
+
+  return Object.fromEntries(Object.entries(weights).map(([attribute, weight]) => [POSITION_WEIGHT_LABELS[attribute], weight]));
 };
 
 // ============================================================
@@ -617,10 +596,10 @@ export const calculateMetaScore = (player) => {
 
   if (Number.isFinite(overall) && overall > 0) {
     const overallAnchor =
-      overall * 0.08;
+      overall * META_SCORE_CONFIG.overallShare;
 
     finalScore =
-      finalScore * 0.92 +
+      finalScore * META_SCORE_CONFIG.adjustedScoreShare +
       overallAnchor;
   }
 
@@ -629,7 +608,7 @@ export const calculateMetaScore = (player) => {
   */
 
   return Math.round(
-    clamp(finalScore, 0, 100)
+    clamp(finalScore, META_SCORE_CONFIG.minimumScore, META_SCORE_CONFIG.maximumScore)
   );
 };
 

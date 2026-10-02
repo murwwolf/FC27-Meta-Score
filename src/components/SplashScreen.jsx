@@ -1,20 +1,44 @@
 import { useEffect, useState } from "react";
 
+const SPLASH_SEEN_KEY = "fc27-meta-score:splash-seen";
+const SPLASH_DURATION_MS = 1200;
+
+function hasSeenSplash() {
+  try {
+    return window.localStorage.getItem(SPLASH_SEEN_KEY) === "true";
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "SecurityError") return false;
+    throw error;
+  }
+}
+
+function markSplashSeen() {
+  try {
+    window.localStorage.setItem(SPLASH_SEEN_KEY, "true");
+  } catch (error) {
+    if (error instanceof DOMException && ["QuotaExceededError", "SecurityError"].includes(error.name)) return;
+    throw error;
+  }
+}
+
 export default function SplashScreen() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(() => !hasSeenSplash());
 
   useEffect(() => {
+    if (!visible) return undefined;
+
+    markSplashSeen();
     document.body.classList.add("fc27-splash-active");
     const timer = window.setTimeout(() => {
       document.body.classList.remove("fc27-splash-active");
       setVisible(false);
-    }, 3000);
+    }, SPLASH_DURATION_MS);
 
     return () => {
       window.clearTimeout(timer);
       document.body.classList.remove("fc27-splash-active");
     };
-  }, []);
+  }, [visible]);
 
   if (!visible) return null;
 

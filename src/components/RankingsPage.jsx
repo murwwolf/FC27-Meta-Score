@@ -134,10 +134,10 @@ function RankingsPage({ players, onOpen }) {
           </span>
           <span className="leaderboard-player-name">{player.name}</span>
         </span>
-        <span className="leaderboard-position">{player.position}</span>
-        <span className="leaderboard-overall">{player.overall}</span>
-        <span className="leaderboard-meta">{player.metaScore}</span>
-        <span className={`leaderboard-tier tier-${String(player.tier || "").toLowerCase()}`}>{player.tier} TIER</span>
+        <span className="leaderboard-position" data-label="POS">{player.position}</span>
+        <span className="leaderboard-overall" data-label="OVR">{player.overall}</span>
+        <span className="leaderboard-meta" data-label="META">{player.metaScore}</span>
+        <span className={`leaderboard-tier tier-${String(player.tier || "").toLowerCase()}`} data-label="TIER">{player.tier} TIER</span>
         <span className="leaderboard-stat">{player.pace}</span>
         <span className="leaderboard-stat">{player.shooting}</span>
         <span className="leaderboard-stat">{player.passing}</span>
