@@ -1,22 +1,16 @@
-﻿import PlayerCard from "./PlayerCard";
 import { useMemo, useState } from "react";
+import PlayerCard from "./PlayerCard";
 
 const POSITION_ORDER = [
-  "ST",
-  "CF",
-  "LW",
-  "RW",
-  "LM",
-  "RM",
-  "CAM",
-  "CM",
-  "CDM",
-  "LB",
-  "LWB",
-  "RB",
-  "RWB",
-  "CB",
-  "GK",
+  "ST", "CF", "LW", "RW", "LM", "RM", "CAM", "CM", "CDM",
+  "LB", "LWB", "RB", "RWB", "CB", "GK",
+];
+
+const POSITION_GROUPS = [
+  { label: "ATTACK", positions: ["ST", "CF", "LW", "RW", "LM", "RM"] },
+  { label: "MIDFIELD", positions: ["CAM", "CM", "CDM"] },
+  { label: "DEFENCE", positions: ["LB", "LWB", "RB", "RWB", "CB"] },
+  { label: "GOALKEEPERS", positions: ["GK"] },
 ];
 
 const SORT_OPTIONS = [
@@ -31,24 +25,18 @@ const SORT_OPTIONS = [
   { value: "name", label: "Name" },
 ];
 
-const displayValue = (value, fallback = "Not listed") => {
-  if (value === null || value === undefined || value === "") {
-    return fallback;
-  }
+const TIER_ORDER = ["S", "A", "B", "C", "D"];
+const normalizeSearch = (value) => String(value || "")
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .toLowerCase();
 
-  return value;
-};
-
-function RankingsPage({ players, onOpen, onCompare }) {
+function RankingsPage({ players, onOpen }) {
   const [selectedPosition, setSelectedPosition] = useState("All");
+  const [selectedGroup, setSelectedGroup] = useState("All");
   const [selectedTier, setSelectedTier] = useState("All");
   const [selectedSort, setSelectedSort] = useState("metaScore");
   const [search, setSearch] = useState("");
-  const [minOverall, setMinOverall] = useState("All");
-  const [leagueFilter, setLeagueFilter] = useState("All");
-  const [clubFilter, setClubFilter] = useState("All");
-  const [nationFilter, setNationFilter] = useState("All");
-  const [cardTypeFilter, setCardTypeFilter] = useState("All");
 
   const positionOptions = useMemo(() => {
     const existingPositions = new Set(
@@ -56,113 +44,109 @@ function RankingsPage({ players, onOpen, onCompare }) {
         .map((player) => String(player.position || "").trim().toUpperCase())
         .filter(Boolean)
     );
-
-    return ["All", ...POSITION_ORDER.filter((position) => existingPositions.has(position))];
+    const ordered = POSITION_ORDER.filter((position) => existingPositions.has(position));
+    const additional = [...existingPositions].filter((position) => !POSITION_ORDER.includes(position)).sort();
+    return ["All", ...ordered, ...additional];
   }, [players]);
 
-  const leagueOptions = useMemo(
-    () => ["All", ...new Set(players.map((player) => player.league).filter(Boolean))].sort((a, b) => {
-      if (a === "All") return -1;
-      if (b === "All") return 1;
-      return a.localeCompare(b);
-    }),
-    [players]
-  );
+  const groupOptions = useMemo(() => {
+    const existingPositions = new Set(positionOptions.slice(1));
+    return POSITION_GROUPS.filter((group) => group.positions.some((position) => existingPositions.has(position)));
+  }, [positionOptions]);
 
-  const clubOptions = useMemo(
-    () => ["All", ...new Set(players.map((player) => player.club).filter(Boolean))].sort((a, b) => {
-      if (a === "All") return -1;
-      if (b === "All") return 1;
-      return a.localeCompare(b);
-    }),
-    [players]
-  );
+  const tierOptions = useMemo(() => {
+    const existingTiers = new Set(players.map((player) => player.tier).filter(Boolean));
+    return [
+      ...TIER_ORDER.filter((tier) => existingTiers.has(tier)),
+      ...[...existingTiers].filter((tier) => !TIER_ORDER.includes(tier)).sort(),
+    ];
+  }, [players]);
 
-  const nationOptions = useMemo(
-    () => ["All", ...new Set(players.map((player) => player.nation).filter(Boolean))].sort((a, b) => {
-      if (a === "All") return -1;
-      if (b === "All") return 1;
-      return a.localeCompare(b);
-    }),
-    [players]
-  );
-
-  const cardTypeOptions = useMemo(
-    () => ["All", ...new Set(players.map((player) => player.cardType || player.promoName || "Base"))].sort((a, b) => {
-      if (a === "All") return -1;
-      if (b === "All") return 1;
-      return a.localeCompare(b);
-    }),
-    [players]
-  );
+  const sortOptions = useMemo(() => SORT_OPTIONS.filter(({ value }) => (
+    value === "name" ||
+    players.some((player) => player[value] !== null && player[value] !== undefined &&
+      player[value] !== "" && Number.isFinite(Number(player[value])))
+  )), [players]);
 
   const rankedPlayers = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
+    const query = normalizeSearch(search.trim());
     const filtered = players.filter((player) => {
-      const position = String(player.position || "").toUpperCase();
-      const cardType = player.cardType || player.promoName || "Base";
-      const matchesQuery =
-        !query ||
-        [player.name, player.club, player.nation, position, player.league]
-          .filter(Boolean)
-          .some((value) => String(value).toLowerCase().includes(query));
+      const position = String(player.position || "").trim().toUpperCase();
+      const matchesGroup = selectedGroup === "All" ||
+        POSITION_GROUPS.find((group) => group.label === selectedGroup)?.positions.includes(position);
 
       return (
-        matchesQuery &&
+        (!query || normalizeSearch(player.name).includes(query)) &&
         (selectedPosition === "All" || position === selectedPosition) &&
-        (selectedTier === "All" || player.tier === selectedTier) &&
-        (minOverall === "All" || Number(player.overall) >= Number(minOverall)) &&
-        (leagueFilter === "All" || player.league === leagueFilter) &&
-        (clubFilter === "All" || player.club === clubFilter) &&
-        (nationFilter === "All" || player.nation === nationFilter) &&
-        (cardTypeFilter === "All" || cardType === cardTypeFilter)
+        matchesGroup &&
+        (selectedTier === "All" || player.tier === selectedTier)
       );
     });
 
     return [...filtered].sort((left, right) => {
-      const sortKey = selectedSort;
-      let result = 0;
+      const result = selectedSort === "name"
+        ? String(left.name || "").localeCompare(String(right.name || ""))
+        : (Number(right[selectedSort] || 0) - Number(left[selectedSort] || 0));
+      if (result !== 0) return result;
 
-      if (sortKey === "name") {
-        result = String(left.name || "").localeCompare(String(right.name || ""));
-      } else if (sortKey === "metaScore") {
-        result = Number(right.metaScore || 0) - Number(left.metaScore || 0);
-      } else {
-        result = Number(right[sortKey] || 0) - Number(left[sortKey] || 0);
-      }
-
-      if (result === 0) {
-        const metaDiff = Number(right.metaScore || 0) - Number(left.metaScore || 0);
-        if (metaDiff !== 0) {
-          return metaDiff;
-        }
-
-        const overallDiff = Number(right.overall || 0) - Number(left.overall || 0);
-        if (overallDiff !== 0) {
-          return overallDiff;
-        }
-
-        return String(left.name || "").localeCompare(String(right.name || ""));
-      }
-
-      return result;
+      const metaDiff = Number(right.metaScore || 0) - Number(left.metaScore || 0);
+      if (metaDiff !== 0) return metaDiff;
+      const overallDiff = Number(right.overall || 0) - Number(left.overall || 0);
+      return overallDiff || String(left.name || "").localeCompare(String(right.name || ""));
     });
-  }, [players, search, selectedPosition, selectedTier, selectedSort, minOverall, leagueFilter, clubFilter, nationFilter, cardTypeFilter]);
+  }, [players, search, selectedPosition, selectedGroup, selectedTier, selectedSort]);
 
-  const featuredPlayers = rankedPlayers.slice(0, 10);
+  const podiumPlayers = rankedPlayers.slice(0, 3);
+  const topTenPlayers = rankedPlayers.slice(0, 10);
+  const remainingPlayers = rankedPlayers.slice(10);
 
-  const resetFilters = () => {
+  function resetFilters() {
     setSearch("");
     setSelectedPosition("All");
+    setSelectedGroup("All");
     setSelectedTier("All");
     setSelectedSort("metaScore");
-    setMinOverall("All");
-    setLeagueFilter("All");
-    setClubFilter("All");
-    setNationFilter("All");
-    setCardTypeFilter("All");
-  };
+  }
+
+  function renderRow(player, index) {
+    return (
+      <button
+        key={player.id}
+        type="button"
+        className="leaderboard-row"
+        onClick={() => onOpen(player)}
+        aria-label={`Open ${player.name} player details`}
+      >
+        <span className="leaderboard-rank">#{index + 1}</span>
+        <span className="leaderboard-player">
+          <span className="leaderboard-avatar" aria-hidden="true">
+            {player.image ? (
+              <img
+                src={player.image}
+                alt=""
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                  event.currentTarget.parentElement.classList.add("fallback");
+                }}
+              />
+            ) : null}
+            <span>{String(player.name || "?").charAt(0)}</span>
+          </span>
+          <span className="leaderboard-player-name">{player.name}</span>
+        </span>
+        <span className="leaderboard-position">{player.position}</span>
+        <span className="leaderboard-overall">{player.overall}</span>
+        <span className="leaderboard-meta">{player.metaScore}</span>
+        <span className={`leaderboard-tier tier-${String(player.tier || "").toLowerCase()}`}>{player.tier} TIER</span>
+        <span className="leaderboard-stat">{player.pace}</span>
+        <span className="leaderboard-stat">{player.shooting}</span>
+        <span className="leaderboard-stat">{player.passing}</span>
+        <span className="leaderboard-stat">{player.dribbling}</span>
+        <span className="leaderboard-stat">{player.defending}</span>
+        <span className="leaderboard-stat">{player.physical}</span>
+      </button>
+    );
+  }
 
   return (
     <main className="rankings-page players-section">
@@ -174,207 +158,171 @@ function RankingsPage({ players, onOpen, onCompare }) {
 
       <div className="section-header rankings-header">
         <div>
-          <div className="section-label">TOP META PLAYERS</div>
-          <h2>FC27 META LEADERBOARD</h2>
+          <div className="section-label">THE META LEADERBOARD</div>
+          <h2>RANKED BY PERFORMANCE</h2>
         </div>
-
         <div className="database-counter">
           <span className="counter-number">{players.length}</span>
           <span className="counter-text">PLAYERS</span>
         </div>
       </div>
+      <p className="rankings-subtitle">Explore every player, ranked by the existing FC27 META Score.</p>
 
-      <p className="rankings-subtitle">Discover the highest-rated META players in FC27 Ultimate Team.</p>
-
-      <div className="filters rankings-filters">
-        <div className="filter-box search-box rankings-search-box">
-          <label className="sr-only" htmlFor="rankings-search">Search players</label>
-          <input
-            id="rankings-search"
-            type="text"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search players..."
-            aria-label="Search players"
-          />
+      <section className="rankings-controls" aria-label="Ranking filters">
+        <div className="rankings-filter-grid">
+          <label className="rankings-search">
+            <span className="sr-only">Search player names</span>
+            <span aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search player name..."
+              aria-label="Search player names"
+            />
+          </label>
+          <label className="rankings-select">
+            <span>POSITION</span>
+            <select
+              value={selectedPosition}
+              onChange={(event) => {
+                setSelectedGroup("All");
+                setSelectedPosition(event.target.value);
+              }}
+              aria-label="Filter by position"
+            >
+              {positionOptions.map((position) => (
+                <option key={position} value={position}>{position === "All" ? "All positions" : position}</option>
+              ))}
+            </select>
+          </label>
+          <label className="rankings-select">
+            <span>META TIER</span>
+            <select value={selectedTier} onChange={(event) => setSelectedTier(event.target.value)} aria-label="Filter by META tier">
+              <option value="All">All tiers</option>
+              {tierOptions.map((tier) => <option key={tier} value={tier}>{tier} Tier</option>)}
+            </select>
+          </label>
+          <label className="rankings-select">
+            <span>SORT BY</span>
+            <select value={selectedSort} onChange={(event) => setSelectedSort(event.target.value)} aria-label="Sort rankings">
+              {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
         </div>
 
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-tier">Tier</label>
-          <select id="rankings-tier" value={selectedTier} onChange={(event) => setSelectedTier(event.target.value)} aria-label="Tier filter">
-            <option value="All">All Tiers</option>
-            <option value="S">S Tier</option>
-            <option value="A">A Tier</option>
-            <option value="B">B Tier</option>
-            <option value="C">C Tier</option>
-            <option value="D">D Tier</option>
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-min-overall">Minimum overall</label>
-          <select id="rankings-min-overall" value={minOverall} onChange={(event) => setMinOverall(event.target.value)} aria-label="Minimum overall">
-            <option value="All">Any Overall</option>
-            {[90, 85, 80, 75, 70].map((rating) => (
-              <option key={rating} value={rating}>{rating}+ Overall</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-sort">Sort by</label>
-          <select id="rankings-sort" value={selectedSort} onChange={(event) => setSelectedSort(event.target.value)} aria-label="Sort players">
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-league">League</label>
-          <select id="rankings-league" value={leagueFilter} onChange={(event) => setLeagueFilter(event.target.value)} aria-label="League filter">
-            {leagueOptions.map((league) => (
-              <option key={league} value={league}>{league === "All" ? "All Leagues" : league}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-club">Club</label>
-          <select id="rankings-club" value={clubFilter} onChange={(event) => setClubFilter(event.target.value)} aria-label="Club filter">
-            {clubOptions.map((club) => (
-              <option key={club} value={club}>{club === "All" ? "All Clubs" : club}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-nation">Nation</label>
-          <select id="rankings-nation" value={nationFilter} onChange={(event) => setNationFilter(event.target.value)} aria-label="Nation filter">
-            {nationOptions.map((nation) => (
-              <option key={nation} value={nation}>{nation === "All" ? "All Nations" : nation}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <label className="sr-only" htmlFor="rankings-card-type">Card type</label>
-          <select id="rankings-card-type" value={cardTypeFilter} onChange={(event) => setCardTypeFilter(event.target.value)} aria-label="Card type filter">
-            {cardTypeOptions.map((cardType) => (
-              <option key={cardType} value={cardType}>{cardType === "All" ? "All Card Types" : cardType}</option>
-            ))}
-          </select>
-        </div>
-
-        <button type="button" className="clear-button rankings-reset" onClick={resetFilters}>RESET FILTERS</button>
-      </div>
-
-      <div className="ranking-tabs rankings-position-tabs" role="tablist" aria-label="Position filters">
-        {positionOptions.map((position) => (
+        <div className="rankings-category-tabs" role="tablist" aria-label="Player category">
           <button
-            key={position}
             type="button"
             role="tab"
-            aria-selected={selectedPosition === position}
-            className={selectedPosition === position ? "active" : ""}
-            onClick={() => setSelectedPosition(position)}
+            aria-selected={selectedGroup === "All"}
+            className={selectedGroup === "All" ? "active" : ""}
+            onClick={() => {
+              setSelectedGroup("All");
+              setSelectedPosition("All");
+            }}
           >
-            {position === "All" ? "ALL" : position}
+            OVERALL
           </button>
-        ))}
-      </div>
-
-      {featuredPlayers.length === 0 ? (
-        <div className="empty-state">
-          <h3>No players found.</h3>
-          <p>Try changing your filters or search.</p>
+          {groupOptions.map((group) => (
+            <button
+              key={group.label}
+              type="button"
+              role="tab"
+              aria-selected={selectedGroup === group.label}
+              className={selectedGroup === group.label ? "active" : ""}
+              onClick={() => {
+                setSelectedGroup(group.label);
+                setSelectedPosition("All");
+              }}
+            >
+              {group.label}
+            </button>
+          ))}
         </div>
-      ) : (
-        <section className="featured-rankings">
-          <div className="top-rankings-grid">
-            {featuredPlayers.map((player, index) => (
-              <PlayerCard
-                key={player.id}
-                player={player}
-                onOpen={onOpen}
-                onCompare={onCompare}
-                rank={index + 1}
-                compact
-              />
-            ))}
-          </div>
+
+        <div className="rankings-position-chips" role="group" aria-label="Quick position filter">
+          <span>POSITION</span>
+          {positionOptions.map((position) => (
+            <button
+              key={position}
+              type="button"
+              aria-pressed={selectedPosition === position}
+              className={selectedPosition === position ? "active" : ""}
+              onClick={() => {
+                setSelectedGroup("All");
+                setSelectedPosition(position);
+              }}
+            >
+              {position === "All" ? "ALL" : position}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {rankedPlayers.length === 0 ? (
+        <section className="rankings-empty-state">
+          <span aria-hidden="true">✦</span>
+          <h3>No players match your filters.</h3>
+          <p>Try another position, tier, or player name.</p>
+          <button type="button" onClick={resetFilters}>RESET FILTERS</button>
         </section>
-      )}
-
-      <section className="ranking-list-panel">
-        <div className="section-header ranking-list-header">
-          <div>
-            <div className="section-label">RANKING LIST</div>
-            <h2>FULL META TABLE</h2>
-          </div>
-        </div>
-
-        {rankedPlayers.length === 0 ? (
-          <div className="empty-state rankings-empty-state">
-            <h3>No players found.</h3>
-            <p>Try changing your filters or search.</p>
-          </div>
-        ) : (
-          <div className="ranking-table" role="table" aria-label="FC27 rankings table">
-            <div className="ranking-table-header" role="rowgroup">
-              <div className="ranking-row ranking-header" role="row">
-                <span role="columnheader">RANK</span>
-                <span role="columnheader">PLAYER</span>
-                <span role="columnheader">POS</span>
-                <span role="columnheader">OVR</span>
-                <span role="columnheader">META</span>
-                <span role="columnheader">PAC</span>
-                <span role="columnheader">SHO</span>
-                <span role="columnheader">PAS</span>
-                <span role="columnheader">DRI</span>
-                <span role="columnheader">DEF</span>
-                <span role="columnheader">PHY</span>
-                <span role="columnheader">CLUB</span>
-              </div>
+      ) : (
+        <>
+          <section className="ranking-podium-section" aria-labelledby="rankings-podium-title">
+            <div className="ranking-section-heading">
+              <div><span className="section-label">THE ELITE THREE</span><h2 id="rankings-podium-title">META PODIUM</h2></div>
+              <span>{rankedPlayers.length} PLAYERS RANKED</span>
             </div>
-
-            <div className="ranking-table-body" role="rowgroup">
-              {rankedPlayers.map((player, index) => (
-                <button
+            <div className="ranking-podium-grid">
+              {podiumPlayers.map((player, index) => (
+                <PlayerCard
                   key={player.id}
-                  type="button"
-                  className="ranking-row ranking-table-row"
-                  onClick={() => onOpen(player)}
-                  aria-label={`Open ${player.name} player details`}
-                >
-                  <span className="rank-value">#{index + 1}</span>
-                  <span className="player-value">
-                    <span className="player-avatar" aria-hidden="true">
-                      {player.image ? (
-                        <img src={player.image} alt="" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.parentElement.classList.add("fallback"); }} />
-                      ) : null}
-                    </span>
-                    <span className="player-text">
-                      <strong>{displayValue(player.name)}</strong>
-                      <small>{displayValue(player.position)} • {displayValue(player.nation)}</small>
-                    </span>
-                  </span>
-                  <span className="stat-value">{displayValue(player.position)}</span>
-                  <span className="stat-value">{displayValue(player.overall)}</span>
-                  <span className="meta-value">{displayValue(player.metaScore)}</span>
-                  <span className="stat-value">{displayValue(player.pace)}</span>
-                  <span className="stat-value">{displayValue(player.shooting)}</span>
-                  <span className="stat-value">{displayValue(player.passing)}</span>
-                  <span className="stat-value">{displayValue(player.dribbling)}</span>
-                  <span className="stat-value">{displayValue(player.defending)}</span>
-                  <span className="stat-value">{displayValue(player.physical)}</span>
-                  <span className="club-value">{displayValue(player.club)}</span>
-                </button>
+                  player={player}
+                  onOpen={onOpen}
+                  rank={index + 1}
+                  compact
+                  showCompareButton={false}
+                />
               ))}
             </div>
-          </div>
-        )}
-      </section>
+          </section>
+
+          <section className="ranking-list-panel" aria-labelledby="rankings-top-ten-title">
+            <div className="ranking-section-heading">
+              <div><span className="section-label">THE CONTENDERS</span><h2 id="rankings-top-ten-title">TOP 10 PLAYERS</h2></div>
+              <span>BASED ON {sortOptions.find((option) => option.value === selectedSort)?.label.toUpperCase()}</span>
+            </div>
+            <div className="leaderboard-table">
+              <div className="leaderboard-head" aria-hidden="true">
+                <span>RANK</span><span>PLAYER</span><span>POS</span><span>OVR</span><span>META</span><span>TIER</span>
+                <span>PAC</span><span>SHO</span><span>PAS</span><span>DRI</span><span>DEF</span><span>PHY</span>
+              </div>
+              <div className="leaderboard-body">
+                {topTenPlayers.map((player, index) => renderRow(player, index))}
+              </div>
+            </div>
+          </section>
+
+          {remainingPlayers.length > 0 && (
+            <section className="ranking-list-panel ranking-full-list" aria-labelledby="rankings-full-title">
+              <div className="ranking-section-heading">
+                <div><span className="section-label">THE COMPLETE FIELD</span><h2 id="rankings-full-title">FULL META LEADERBOARD</h2></div>
+                <span>RANKS 11–{rankedPlayers.length}</span>
+              </div>
+              <div className="leaderboard-table">
+                <div className="leaderboard-head" aria-hidden="true">
+                  <span>RANK</span><span>PLAYER</span><span>POS</span><span>OVR</span><span>META</span><span>TIER</span>
+                  <span>PAC</span><span>SHO</span><span>PAS</span><span>DRI</span><span>DEF</span><span>PHY</span>
+                </div>
+                <div className="leaderboard-body">
+                  {remainingPlayers.map((player, index) => renderRow(player, index + 10))}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
+      )}
     </main>
   );
 }

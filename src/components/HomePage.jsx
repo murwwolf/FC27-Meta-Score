@@ -20,7 +20,7 @@ function getTierRanges() {
   });
 }
 
-function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onCompare }) {
+function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onCompare, favouritePlayers = [], recentPlayers = [] }) {
   const topPlayers = useMemo(() => [...scoredPlayers].sort((left, right) => {
     const scoreDifference = Number(right.metaScore || 0) - Number(left.metaScore || 0);
     if (scoreDifference) return scoreDifference;
@@ -96,6 +96,41 @@ function HomePage({ scoredPlayers, search, setSearch, onNavigate, onOpen, onComp
               <span className="home-highlight-detail">UNIQUE PLAYING POSITIONS</span>
             </div>
           </section>
+
+          {favouritePlayers.length > 0 || recentPlayers.length > 0 ? (
+            <section className="home-my-players home-section" aria-labelledby="home-my-players-title">
+              <header className="home-section-heading">
+                <div><span className="section-label">YOUR PERSONAL SHORTLIST</span><h2 id="home-my-players-title">MY PLAYERS</h2></div>
+                {favouritePlayers.length > 0 ? (
+                  <button type="button" className="text-action" onClick={() => onNavigate("favourites")}>
+                    ALL FAVOURITES <span aria-hidden="true">→</span>
+                  </button>
+                ) : null}
+              </header>
+              <div className="home-my-player-groups">
+                {favouritePlayers.length > 0 ? (
+                  <section className="home-my-player-group" aria-label="Favourite players">
+                    <div className="home-my-player-group-heading"><span><i aria-hidden="true">★</i> FAVOURITES</span><span>{favouritePlayers.length} SAVED</span></div>
+                    <div className="home-my-player-grid">
+                      {favouritePlayers.slice(0, 3).map((player) => (
+                        <PlayerCard key={player.id} player={player} compact onOpen={onOpen} onCompare={onCompare} />
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+                {recentPlayers.length > 0 ? (
+                  <section className="home-my-player-group" aria-label="Recently viewed players">
+                    <div className="home-my-player-group-heading"><span><i aria-hidden="true">◷</i> RECENTLY VIEWED</span><span>LAST {recentPlayers.length}</span></div>
+                    <div className="home-my-player-grid">
+                      {recentPlayers.slice(0, 3).map((player) => (
+                        <PlayerCard key={player.id} player={player} compact onOpen={onOpen} onCompare={onCompare} />
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
 
           <section className="home-top-meta home-section">
             <header className="home-section-heading">

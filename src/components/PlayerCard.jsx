@@ -1,4 +1,5 @@
 import { useState } from "react";
+import usePlayerCollections from "./usePlayerCollections";
 import Stat from "./Stat";
 
 const countryCodes = {
@@ -26,9 +27,11 @@ function getCountryCode(country) {
 
 function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showCompareButton = true }) {
   const [imageFailed, setImageFailed] = useState(false);
+  const collections = usePlayerCollections();
   const isGK = player.position === "GK";
   const countryCode = getCountryCode(player.nation);
   const cardType = player.cardType || player.promoName || "Not listed";
+  const isFavourite = collections?.isFavourite(player.id) || false;
 
   return (
     <article
@@ -58,6 +61,24 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
       </div>
 
       <div className="player-image-area"><div className="image-glow" />
+        {collections ? (
+          <button
+            type="button"
+            className={`player-favourite-toggle${isFavourite ? " is-favourite" : ""}`}
+            aria-label={`${isFavourite ? "Remove" : "Add"} ${player.name} ${isFavourite ? "from" : "to"} favourites`}
+            aria-pressed={isFavourite}
+            title={isFavourite ? "Remove from favourites" : "Add to favourites"}
+            onClick={(event) => {
+              event.stopPropagation();
+              collections.toggleFavourite(player.id);
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m12 3 2.75 5.58 6.16.9-4.46 4.35 1.05 6.14L12 17.07l-5.5 2.9 1.05-6.14L3.1 9.48l6.16-.9L12 3Z" />
+            </svg>
+            <span className="sr-only">{isFavourite ? "Favourited" : "Not favourited"}</span>
+          </button>
+        ) : null}
 
         {player.image && !imageFailed ? (
           <img
@@ -147,5 +168,3 @@ function PlayerCard({ player, onOpen, onCompare, rank, compact = false, showComp
 }
 
 export default PlayerCard;
-
-

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "country-flag-icons/3x2/flags.css";
 import "./premium.css";
 import players from "./lib/playerData";
@@ -6,11 +6,22 @@ import { calculateMetaScore, getTier } from "./lib/meta/metaScore";
 import HomePage from "./components/HomePage";
 import MetaScorePage from "./components/MetaScorePage";
 import PlayersPage from "./components/PlayersPage";
+import MetaFinderPage from "./components/MetaFinderPage";
+import FavouritesPage from "./components/FavouritesPage";
+import PlayerCollectionsProvider from "./components/PlayerCollectionsProvider";
 import RankingsPage from "./components/RankingsPage";
 import PlayerDetails from "./components/PlayerDetails";
 import ComparePage from "./components/ComparePage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import {
+  FAVOURITES_STORAGE_KEY,
+  RECENT_PLAYER_LIMIT,
+  RECENT_STORAGE_KEY,
+  readPlayerReferences,
+  resolvePlayerReferences,
+  writePlayerReferences,
+} from "./lib/playerReferences";
 
 const getOptions = (players, key) => ["All", ...new Set(players.map((player) => player[key]).filter(Boolean))]
   .sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b));
@@ -29,6 +40,8 @@ function AppShell() {
   const [cardTypeFilter, setCardTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("meta-desc");
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [favouriteIds, setFavouriteIds] = useState(() => readPlayerReferences(FAVOURITES_STORAGE_KEY, players));
+  const [recentPlayerIds, setRecentPlayerIds] = useState(() => readPlayerReferences(RECENT_STORAGE_KEY, players, RECENT_PLAYER_LIMIT));
   const [comparePlayers, setComparePlayers] = useState(() => players.slice(0, 2).map((player) => {
     const metaScore = calculateMetaScore(player);
     return { ...player, metaScore, tier: getTier(metaScore) };
@@ -38,6 +51,33 @@ function AppShell() {
     const metaScore = calculateMetaScore(player);
     return { ...player, metaScore, tier: getTier(metaScore) };
   }), []);
+
+  useEffect(() => {
+    writePlayerReferences(FAVOURITES_STORAGE_KEY, favouriteIds);
+  }, [favouriteIds]);
+
+  useEffect(() => {
+    writePlayerReferences(RECENT_STORAGE_KEY, recentPlayerIds.slice(0, RECENT_PLAYER_LIMIT));
+  }, [recentPlayerIds]);
+
+  const favouriteIdSet = useMemo(() => new Set(favouriteIds.map(String)), [favouriteIds]);
+  const toggleFavourite = useCallback((id) => {
+    setFavouriteIds((current) => current.some((item) => String(item) === String(id))
+      ? current.filter((item) => String(item) !== String(id))
+      : [...current, id]);
+  }, []);
+  const collectionContext = useMemo(() => ({
+    isFavourite: (id) => favouriteIdSet.has(String(id)),
+    toggleFavourite,
+  }), [favouriteIdSet, toggleFavourite]);
+  const favouritePlayers = useMemo(
+    () => resolvePlayerReferences(favouriteIds, scoredPlayers),
+    [favouriteIds, scoredPlayers]
+  );
+  const recentPlayers = useMemo(
+    () => resolvePlayerReferences(recentPlayerIds, scoredPlayers, RECENT_PLAYER_LIMIT),
+    [recentPlayerIds, scoredPlayers]
+  );
 
   const filteredPlayers = useMemo(() => {
     const query = normalizeSearch(search.trim());
@@ -86,7 +126,14 @@ function AppShell() {
     .sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b)), [scoredPlayers]);
   const overallOptions = useMemo(() => [...new Set(scoredPlayers.map((player) => Number(player.overall)).filter((rating) => Number.isFinite(rating) && rating >= 80))].sort((a, b) => a - b), [scoredPlayers]);
 
-  function openPlayer(player) { setSelectedPlayer(player); setPage("player"); }
+  function openPlayer(player) {
+    setRecentPlayerIds((current) => [
+      player.id,
+      ...current.filter((id) => String(id) !== String(player.id)),
+    ].slice(0, RECENT_PLAYER_LIMIT));
+    setSelectedPlayer(player);
+    setPage("player");
+  }
   function goHome() { setPage("home"); setSelectedPlayer(null); }
   function clearFilters() {
     setSearch(""); setPosition("All"); setTier("All"); setMinRating("0");
@@ -112,40 +159,47 @@ function AppShell() {
     setComparePlayers((current) => current.map((player, itemIndex) => itemIndex === index ? null : player));
   }
   function swapComparePlayers() { setComparePlayers((current) => [current[1] || null, current[0] || null]); }
+  function resetComparePlayers() { setComparePlayers([null, null]); }
 
   return (
-    <div className="app">
-      <div className="background-grid" />
-      <div className="red-glow red-glow-one" />
-      <div className="red-glow red-glow-two" />
-      <Navbar page={page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
+    <PlayerCollectionsProvider value={collectionContext}>
+      <div className="app">
+        <div className="background-grid" />
+        <div className="red-glow red-glow-one" />
+        <div className="red-glow red-glow-two" />
+        <Navbar page={page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
 
-      {page === "home" && <HomePage
-        scoredPlayers={scoredPlayers}
-        search={search}
-        setSearch={setSearch}
-        onNavigate={setPage}
-        onOpen={openPlayer}
-        onCompare={addToCompare}
-      />}
-      {page === "meta-score" && <MetaScorePage players={scoredPlayers} onNavigate={setPage} onOpen={openPlayer} onCompare={addToCompare} />}
+        {page === "home" && <HomePage
+          scoredPlayers={scoredPlayers}
+          search={search}
+          setSearch={setSearch}
+          onNavigate={setPage}
+          onOpen={openPlayer}
+          onCompare={addToCompare}
+          favouritePlayers={favouritePlayers}
+          recentPlayers={recentPlayers}
+        />}
+        {page === "meta-score" && <MetaScorePage players={scoredPlayers} onNavigate={setPage} onOpen={openPlayer} onCompare={addToCompare} />}
 
-      {page === "players" && <PlayersPage
-        players={filteredPlayers} search={search} setSearch={setSearch}
-        position={position} setPosition={setPosition} tier={tier} setTier={setTier}
-        leagueFilter={leagueFilter} setLeagueFilter={setLeagueFilter}
-        clubFilter={clubFilter} setClubFilter={setClubFilter}
-        nationFilter={nationFilter} setNationFilter={setNationFilter}
-        cardTypeFilter={cardTypeFilter} setCardTypeFilter={setCardTypeFilter} cardTypes={cardTypes}
-        minRating={minRating} setMinRating={setMinRating} overallOptions={overallOptions} sortBy={sortBy} setSortBy={setSortBy}
-        positions={positions} leagues={leagues} clubs={clubs} nations={nations}
-        onOpen={openPlayer} onCompare={addToCompare} onClear={clearFilters} totalPlayers={scoredPlayers.length}
-      />}
-      {page === "rankings" && <RankingsPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
-      {page === "compare" && <ComparePage players={comparePlayers} allPlayers={scoredPlayers} onSelect={selectComparePlayer} onRemove={removeComparePlayer} onSwap={swapComparePlayers} onOpen={openPlayer} />}
-      {page === "player" && selectedPlayer && <PlayerDetails player={selectedPlayer} onBack={() => { setPage("players"); setSelectedPlayer(null); }} onCompare={addToCompare} />}
-      <Footer />
-    </div>
+        {page === "players" && <PlayersPage
+          players={filteredPlayers} search={search} setSearch={setSearch}
+          position={position} setPosition={setPosition} tier={tier} setTier={setTier}
+          leagueFilter={leagueFilter} setLeagueFilter={setLeagueFilter}
+          clubFilter={clubFilter} setClubFilter={setClubFilter}
+          nationFilter={nationFilter} setNationFilter={setNationFilter}
+          cardTypeFilter={cardTypeFilter} setCardTypeFilter={setCardTypeFilter} cardTypes={cardTypes}
+          minRating={minRating} setMinRating={setMinRating} overallOptions={overallOptions} sortBy={sortBy} setSortBy={setSortBy}
+          positions={positions} leagues={leagues} clubs={clubs} nations={nations}
+          onOpen={openPlayer} onCompare={addToCompare} onClear={clearFilters} totalPlayers={scoredPlayers.length}
+        />}
+        {page === "meta-finder" && <MetaFinderPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
+        {page === "favourites" && <FavouritesPage players={favouritePlayers} onOpen={openPlayer} onCompare={addToCompare} onNavigate={setPage} />}
+        {page === "rankings" && <RankingsPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
+        {page === "compare" && <ComparePage players={comparePlayers} allPlayers={scoredPlayers} onSelect={selectComparePlayer} onRemove={removeComparePlayer} onSwap={swapComparePlayers} onReset={resetComparePlayers} onOpen={openPlayer} />}
+        {page === "player" && selectedPlayer && <PlayerDetails player={selectedPlayer} onBack={() => { setPage("players"); setSelectedPlayer(null); }} onCompare={addToCompare} />}
+        <Footer />
+      </div>
+    </PlayerCollectionsProvider>
   );
 }
 

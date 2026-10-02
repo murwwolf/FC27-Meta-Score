@@ -1,4 +1,6 @@
-﻿import PlayerCard from "./PlayerCard";
+import { useState } from "react";
+import PlayerCard from "./PlayerCard";
+import PlayerSharePanel from "./PlayerSharePanel";
 import MetaBreakdown from "./MetaBreakdown";
 import ProfileStat from "./ProfileStat";
 import ProfileInfo from "./ProfileInfo";
@@ -15,11 +17,13 @@ function toPlayStyles(value) {
 }
 
 function PlayerDetails({ player, onBack, onCompare }) {
+  const [shareOpen, setShareOpen] = useState(false);
   const playStyles = toPlayStyles(player.playStyles || player.playstyles);
   const playStylesPlus = toPlayStyles(player.playStylesPlus || player.playstylesPlus || player.playStylePlus);
   const workRate = [player.attackingWorkRate, player.defensiveWorkRate].filter(Boolean).join(" / ");
 
   return (
+    <>
     <main className="player-details-page">
       <div className="player-details-topbar">
         <button
@@ -60,9 +64,14 @@ function PlayerDetails({ player, onBack, onCompare }) {
             <div className="profile-summary-footer">
               <span>OVERALL <strong>{player.overall}</strong></span>
               <span>POSITION <strong>{player.position}</strong></span>
-              <button type="button" className="profile-compare-button" onClick={() => onCompare(player)}>
-                ADD TO COMPARE
-              </button>
+              <div className="profile-action-buttons">
+                <button type="button" className="profile-share-button" onClick={() => setShareOpen(true)}>
+                  <span aria-hidden="true">↗</span> SHARE PLAYER
+                </button>
+                <button type="button" className="profile-compare-button" onClick={() => onCompare(player)}>
+                  ADD TO COMPARE
+                </button>
+              </div>
             </div>
           </header>
 
@@ -136,10 +145,11 @@ function PlayerDetails({ player, onBack, onCompare }) {
         </div>
       </div>
     </main>
+    {shareOpen ? <PlayerSharePanel player={player} onClose={() => setShareOpen(false)} /> : null}
+    </>
   );
 }
 
 export default PlayerDetails;
-
 
 

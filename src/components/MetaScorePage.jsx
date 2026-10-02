@@ -1,21 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getPositionWeights, getTier, getTierInfo } from "../lib/meta/metaScore";
+import MetaBreakdown from "./MetaBreakdown";
 import PlayerCard from "./PlayerCard";
 
-const POSITION_CODES = ["ST", "CF", "LW", "RW", "LM", "RM", "CAM", "CM", "CDM", "LB", "LWB", "RB", "RWB", "CB", "GK"];
-const ATTRIBUTE_KEYS = {
-  Pace: "pace",
-  Shooting: "shooting",
-  Passing: "passing",
-  Dribbling: "dribbling",
-  Defending: "defending",
-  Physical: "physical",
-  Diving: "pace",
-  Handling: "shooting",
-  Kicking: "passing",
-  Reflexes: "dribbling",
-  Positioning: "physical",
-};
+const POSITION_ORDER = ["ST", "CF", "LW", "RW", "LM", "RM", "CAM", "CM", "CDM", "LB", "LWB", "RB", "RWB", "CB", "GK"];
 const ATTRIBUTE_LABELS = {
   Pace: "PAC",
   Shooting: "SHO",
@@ -55,51 +43,69 @@ function buildTierRanges() {
       ...getTierInfo(scores[0]),
     }))
     .sort((left, right) => right.minScore - left.minScore)
-    .map(({ minScore, ...tier }) => tier);
+    .map(({ tier, range, label, description }) => ({ tier, range, label, description }));
 }
 
-function buildPositionGroups() {
+function buildPositionGroups(players) {
   const groupsByWeights = new Map();
-  POSITION_CODES.forEach((position) => {
+  const positions = [...new Set(players.map((player) => String(player.position || "").trim().toUpperCase()).filter(Boolean))]
+    .sort((left, right) => {
+      const leftIndex = POSITION_ORDER.indexOf(left);
+      const rightIndex = POSITION_ORDER.indexOf(right);
+      return (leftIndex < 0 ? POSITION_ORDER.length : leftIndex) - (rightIndex < 0 ? POSITION_ORDER.length : rightIndex) || left.localeCompare(right);
+    });
+  positions.forEach((position) => {
     const weights = getPositionWeights({ position });
     const signature = JSON.stringify(weights);
-    const group = groupsByWeights.get(signature) || { positions: [], weights };
+    const group = groupsByWeights.get(signature) || { positions: [], weights, signature };
     group.positions.push(position);
     groupsByWeights.set(signature, group);
   });
 
-  const groups = [...groupsByWeights.values()].map((group) => ({
+  return [...groupsByWeights.values()].map((group) => ({
     ...group,
     label: group.positions.join(" / "),
     isGoalkeeper: group.positions.includes("GK"),
   }));
-  groups.push({ label: "OTHER POSITIONS / FALLBACK", positions: [], weights: getPositionWeights({}), isGoalkeeper: false });
-  return groups;
-}
-
-function getExampleAttributes(player, weights) {
-  return Object.entries(weights).map(([attribute, weight]) => ({
-    attribute,
-    label: ATTRIBUTE_LABELS[attribute] || attribute,
-    value: player[ATTRIBUTE_KEYS[attribute]],
-    weight,
-  }));
 }
 
 function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
+  const [selectedProfile, setSelectedProfile] = useState("");
   const rankedPlayers = useMemo(() => [...players].sort((left, right) => {
     const scoreDifference = Number(right.metaScore || 0) - Number(left.metaScore || 0);
     if (scoreDifference) return scoreDifference;
     const overallDifference = Number(right.overall || 0) - Number(left.overall || 0);
     return overallDifference || String(left.name || "").localeCompare(String(right.name || ""));
   }), [players]);
-  const positionGroups = useMemo(buildPositionGroups, []);
-  const tierRanges = useMemo(buildTierRanges, []);
+  const positionGroups = useMemo(() => buildPositionGroups(players), [players]);
+  const tierRanges = useMemo(() => buildTierRanges(), []);
   const examplePlayer = rankedPlayers[0] || null;
-  const exampleWeights = examplePlayer ? getPositionWeights(examplePlayer) : {};
-  const exampleAttributes = examplePlayer ? getExampleAttributes(examplePlayer, exampleWeights) : [];
+  const selectedPositionGroup = positionGroups.find((group) => group.signature === selectedProfile) || positionGroups[0];
   const goalkeeperWeights = positionGroups.find((group) => group.isGoalkeeper)?.weights || {};
-  const outfieldGroups = positionGroups.filter((group) => !group.isGoalkeeper);
+  const sameOverallPair = useMemo(() => {
+    const playersByOverall = new Map();
+    players.forEach((player) => {
+      const overall = Number(player.overall);
+      if (!Number.isFinite(overall)) return;
+      const group = playersByOverall.get(overall) || [];
+      group.push(player);
+      playersByOverall.set(overall, group);
+    });
+    let bestPair = null;
+    let largestDifference = -1;
+    playersByOverall.forEach((group) => {
+      group.forEach((player, index) => {
+        group.slice(index + 1).forEach((candidate) => {
+          const difference = Math.abs(Number(player.metaScore) - Number(candidate.metaScore));
+          if (difference > largestDifference) {
+            largestDifference = difference;
+            bestPair = [player, candidate];
+          }
+        });
+      });
+    });
+    return bestPair;
+  }, [players]);
 
   return (
     <main className="meta-explainer-page">
@@ -107,9 +113,9 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
         <div className="meta-explainer-pitch" aria-hidden="true" />
         <div className="meta-explainer-hero-copy">
           <span className="meta-explainer-kicker">FC27 ULTIMATE TEAM / RATING MODEL</span>
-          <h1>FC27 META <span>SCORE</span></h1>
-          <h2>How is your FC27 player rated?</h2>
-          <p>Every player receives a META Score from 0–100 based on the attributes that matter most for their position.</p>
+          <h1>META <span>METHODOLOGY</span></h1>
+          <h2>See exactly how FC27 META SCORE evaluates every player.</h2>
+          <p>The META score is a position-aware rating designed to reflect which attributes matter most for a player's role. It is not simply the player's Overall rating.</p>
           <div className="meta-explainer-badges"><span>POSITION-WEIGHTED SYSTEM</span><span>0–100 SCORE</span><span>WEBSITE MODEL · NOT OFFICIAL EA</span></div>
         </div>
         <div className="meta-hero-mark" aria-hidden="true">M</div>
@@ -119,26 +125,42 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
         <div className="meta-section-index">01 / THE MODEL</div>
         <div className="meta-intro-copy">
           <span className="meta-section-kicker">A POSITION-FIRST VIEW</span>
-          <h2>WHAT IS META SCORE?</h2>
-          <p>META Score combines relevant player attributes using weights that change by position. Attackers, midfielders, defenders, and goalkeepers are assessed with different priorities.</p>
-          <p><strong>Higher score means a stronger fit for this website's position-specific META model.</strong> It is not the same as Overall Rating: a player's role-relevant attributes can produce a strong META Score even when their Overall is lower, and a high Overall alone does not guarantee a high META Score.</p>
+          <h2>HOW META WORKS</h2>
+          <p>Player attributes are weighted differently depending on position. The relevant weighted attributes are combined, then the model applies its existing gameplay and eligible height adjustments, a small Overall blend, and the engine's final rounding and clamp.</p>
+          <p><strong>The same Overall can produce different META scores</strong> because the positions and underlying attributes differ. The score shown here is the existing scoring system used throughout the app.</p>
         </div>
         <aside className="meta-model-note"><span>IMPORTANT CONTEXT</span><strong>A model, not an official EA rating.</strong><p>The score is a comparison aid based on this site's published approach, not a universal measure of player quality.</p></aside>
       </section>
 
       <section className="meta-weights-section">
         <header className="meta-section-heading">
-          <div><span className="meta-section-kicker">POSITION-SPECIFIC ATTRIBUTE MIX</span><h2>HOW THE SCORE IS CALCULATED</h2></div>
-          <p>These weights come directly from the existing scoring utility. The final score also applies the adjustments described below.</p>
+          <div><span className="meta-section-kicker">POSITION-SPECIFIC ATTRIBUTE MIX</span><h2>EXPLORE POSITION WEIGHTS</h2></div>
+          <p>Choose a scoring profile to see its exact weighted attributes. Profiles are grouped only when the existing utility returns identical weights.</p>
         </header>
-        <div className="meta-position-grid">
-          {outfieldGroups.map((group) => (
-            <article className="meta-position-card" key={group.label}>
-              <header><span>OUTFIELD MODEL</span><h3>{group.label}</h3></header>
-              <dl>{Object.entries(group.weights).map(([attribute, weight]) => <div className="meta-weight-row" key={attribute}><dt>{ATTRIBUTE_LABELS[attribute] || attribute}</dt><dd><span>{attribute}</span><strong>{Math.round(weight * 100)}%</strong></dd><i><b style={{ width: `${weight * 100}%` }} /></i></div>)}</dl>
-            </article>
+        <div className="meta-position-tabs" role="group" aria-label="Select a position scoring profile">
+          {positionGroups.map((group) => (
+            <button
+              type="button"
+              key={group.signature}
+              aria-pressed={(selectedPositionGroup?.signature || "") === group.signature}
+              onClick={() => setSelectedProfile(group.signature)}
+            >
+              {group.label}
+            </button>
           ))}
         </div>
+        {selectedPositionGroup ? (
+          <article className="meta-position-card meta-selected-position" aria-live="polite">
+            <header><span>{selectedPositionGroup.isGoalkeeper ? "GOALKEEPER MODEL" : "POSITION PROFILE"}</span><h3>{selectedPositionGroup.label}</h3></header>
+            <dl>{Object.entries(selectedPositionGroup.weights).map(([attribute, weight]) => (
+              <div className="meta-weight-row" key={attribute}>
+                <dt>{ATTRIBUTE_LABELS[attribute] || attribute}</dt>
+                <dd><span>{attribute}</span><strong>{Math.round(weight * 100)}%</strong></dd>
+                <i aria-hidden="true"><b style={{ width: `${weight * 100}%` }} /></i>
+              </div>
+            ))}</dl>
+          </article>
+        ) : null}
         <div className="meta-final-formula">
           <span>FINAL SCORE FLOW</span>
           <p>Position-weighted base score + gameplay bonus + eligible height context bonus, then a small <strong>8% Overall anchor</strong>, rounded and clamped to 0–100.</p>
@@ -164,6 +186,16 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
         </div>
       </section>
 
+      <section className="meta-role-explainer" aria-labelledby="meta-role-heading">
+        <header className="meta-section-heading"><div><span className="meta-section-kicker">ROLE CHANGES PRIORITY</span><h2 id="meta-role-heading">WHY POSITION MATTERS</h2></div><p>The exact mix is determined by the selected player's position and the position weights above.</p></header>
+        <div className="meta-role-grid">
+          <article><span>ATTACK</span><p>ST/CF prioritize shooting; wide attackers prioritize dribbling and pace. Attacking roles also weight the gameplay bonus more.</p></article>
+          <article><span>MIDFIELD</span><p>CAM, CM, and CDM use distinct profiles, balancing passing, dribbling, and role-specific shooting, defending, pace, and physical attributes.</p></article>
+          <article><span>DEFENCE</span><p>Centre-backs emphasize defending and physical attributes; fullbacks use their own mix with pace, defending, passing, and dribbling.</p></article>
+          <article><span>GOALKEEPER</span><p>GK uses Diving, Reflexes, Positioning, Handling, and Kicking weights, plus the engine's separate speed adjustment.</p></article>
+        </div>
+      </section>
+
       <section className="meta-attributes-section">
         <header className="meta-section-heading"><div><span className="meta-section-kicker">THE SIX SHARED STAT FIELDS</span><h2>ATTRIBUTE BREAKDOWN</h2></div><p>These attributes do not carry equal weight in every position model.</p></header>
         <div className="meta-attribute-grid">
@@ -180,17 +212,16 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
 
       {examplePlayer ? (
         <section className="meta-example-section">
-          <header className="meta-section-heading"><div><span className="meta-section-kicker">CURRENT DATABASE LEADER</span><h2>SEE IT IN ACTION</h2></div><p>This example is selected dynamically from the current scored player collection.</p></header>
-          <div className="meta-example-panel">
+          <header className="meta-section-heading"><div><span className="meta-section-kicker">REAL DATABASE RECORD</span><h2>EXAMPLE CALCULATION</h2></div><p>All values below come from this player record and the existing score utilities. This explains the current calculation; it is not a new scoring rule.</p></header>
+          <div className="meta-example-panel has-meta-breakdown">
             <div className="meta-example-card"><PlayerCard player={examplePlayer} onOpen={onOpen} onCompare={onCompare} showCompareButton={false} /></div>
             <div className="meta-example-details">
-              <span className="meta-example-rank">#1 META SCORE</span>
+              <span className="meta-example-rank">LIVE DATABASE EXAMPLE</span>
               <h3>{examplePlayer.name || "Not listed"}</h3>
               <p>{examplePlayer.position || "Not listed"} <i /> OVR {examplePlayer.overall ?? "Not listed"} <i /> META {examplePlayer.metaScore ?? "Not listed"} / 100 <i /> {examplePlayer.tier || "Not listed"} TIER</p>
-              <div className="meta-example-weights"><h4>RELEVANT ATTRIBUTES & POSITION WEIGHTS</h4><div>{exampleAttributes.map(({ attribute, label, value, weight }) => <div className="meta-example-stat" key={attribute}><span>{label}</span><strong>{value ?? "Not listed"}</strong><small>{Math.round(weight * 100)}% weight</small></div>)}</div></div>
               <button type="button" className="secondary-action" onClick={() => onOpen(examplePlayer)}>OPEN PLAYER DETAILS <span aria-hidden="true">→</span></button>
-              <small className="meta-example-caveat">Attribute weights are shown from the existing utility. Intermediate score contributions are not exposed by the scoring engine.</small>
             </div>
+            <div className="meta-example-breakdown"><MetaBreakdown player={examplePlayer} /></div>
           </div>
         </section>
       ) : (
@@ -198,12 +229,18 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
       )}
 
       <section className="meta-vs-section">
-        <header className="meta-section-heading"><div><span className="meta-section-kicker">TWO DIFFERENT NUMBERS</span><h2>META SCORE ≠ OVERALL</h2></div></header>
+        <header className="meta-section-heading"><div><span className="meta-section-kicker">SAME OVERALL · DIFFERENT RECORDS</span><h2>WHY OVERALL ≠ META</h2></div><p>Overall is the general card rating. META focuses on the attributes that matter most for a player's position.</p></header>
         <div className="meta-vs-grid">
-          <article><span>OVERALL</span><h3>The game's player rating</h3><p>Overall is the rating supplied with the player record. In this model, it has a small anchoring role in the final META Score when available.</p></article>
-          <div className="meta-vs-mark" aria-hidden="true">≠</div>
-          <article><span>META SCORE</span><h3>This website's position-weighted model</h3><p>META Score emphasizes the attributes and limited gameplay/context adjustments selected for the player's position. That is why it can differ from Overall.</p></article>
+          {sameOverallPair ? sameOverallPair.map((player) => (
+            <article className="meta-same-overall-player" key={player.id}>
+              <div className="meta-same-overall-card"><PlayerCard player={player} onOpen={onOpen} onCompare={onCompare} showCompareButton={false} /></div>
+              <div><span>{player.position} · {player.overall} OVERALL</span><h3>{player.name}</h3><strong className={`meta-same-overall-score tier-${String(player.tier || "").toLowerCase()}`}>{player.metaScore} META · {player.tier} TIER</strong></div>
+            </article>
+          )) : (
+            <article className="meta-same-overall-empty"><span>LIVE DATABASE EXAMPLE</span><h3>Position-weighted ratings</h3><p>Each player's META score is calculated from the attributes and adjustments relevant to their position.</p></article>
+          )}
         </div>
+        <p className="meta-example-caveat">A real database example, selected dynamically. Both players have the same Overall, while their positions and existing META scores differ; this is an illustration, not a new scoring rule.</p>
       </section>
 
       <section className="meta-limitations-section">
@@ -216,6 +253,7 @@ function MetaScorePage({ players, onNavigate, onOpen, onCompare }) {
         <h2>READY TO FIND YOUR META PLAYERS?</h2>
         <div><button type="button" className="primary-action" onClick={() => onNavigate("players")}>EXPLORE PLAYERS <span aria-hidden="true">→</span></button><button type="button" className="secondary-action" onClick={() => onNavigate("rankings")}>VIEW RANKINGS <span aria-hidden="true">↗</span></button><button type="button" className="secondary-action" onClick={() => onNavigate("compare")}>COMPARE PLAYERS <span aria-hidden="true">⇄</span></button></div>
       </section>
+      <p className="meta-methodology-disclaimer">META SCORE is an in-app calculation based on the FC27 player attributes available in this database. It is not an official EA rating.</p>
     </main>
   );
 }
