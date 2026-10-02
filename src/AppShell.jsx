@@ -38,10 +38,37 @@ const PAGE_LABELS = {
   compare: "COMPARE",
   "meta-score": "METHODOLOGY",
 };
+const APP_PAGES = new Set([...Object.keys(PAGE_LABELS), "player"]);
+
+function getRouteState() {
+  const storedRoute = window.history.state?.fc27Route;
+  if (storedRoute && APP_PAGES.has(storedRoute.page)) return storedRoute;
+
+  const [page, playerId] = window.location.hash.slice(1).split("/");
+  if (!APP_PAGES.has(page)) return { page: "home" };
+  return page === "player"
+    ? { page, playerId: playerId || "", returnPage: "players" }
+    : { page };
+}
+
+function writeRouteState(route, replace = false) {
+  const currentState = window.history.state;
+  const state = currentState && typeof currentState === "object" ? currentState : {};
+  const url = new URL(window.location.href);
+  const routePath = route.page === "player"
+    ? `player/${encodeURIComponent(String(route.playerId))}`
+    : route.page;
+  url.hash = routePath;
+  window.history[replace ? "replaceState" : "pushState"](
+    { ...state, fc27Route: route },
+    "",
+    url
+  );
+}
 
 function AppShell() {
-  const [page, setPage] = useState("home");
-  const [returnPage, setReturnPage] = useState("players");
+  const [page, setPage] = useState(() => getRouteState().page);
+  const [returnPage, setReturnPage] = useState(() => getRouteState().returnPage || "players");
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState("All");
   const [tier, setTier] = useState("All");
@@ -51,7 +78,15 @@ function AppShell() {
   const [nationFilter, setNationFilter] = useState("All");
   const [cardTypeFilter, setCardTypeFilter] = useState("All");
   const [sortBy, setSortBy] = useState("meta-desc");
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [selectedPlayer, setSelectedPlayer] = useState(() => {
+    const route = getRouteState();
+    const player = route.page === "player"
+      ? players.find((item) => String(item.id) === String(route.playerId))
+      : null;
+    if (!player) return null;
+    const metaScore = calculateMetaScore(player);
+    return { ...player, metaScore, tier: getTier(metaScore) };
+  });
   const [favouriteIds, setFavouriteIds] = useState(() => readPlayerReferences(FAVOURITES_STORAGE_KEY, players));
   const [recentPlayerIds, setRecentPlayerIds] = useState(() => readPlayerReferences(RECENT_STORAGE_KEY, players, RECENT_PLAYER_LIMIT));
   const [comparePlayers, setComparePlayers] = useState(() => players.slice(0, 2).map((player) => {
@@ -63,6 +98,34 @@ function AppShell() {
     const metaScore = calculateMetaScore(player);
     return { ...player, metaScore, tier: getTier(metaScore) };
   }), []);
+
+  useLayoutEffect(() => {
+    const route = getRouteState();
+    if (route.page === "player" && !players.some((player) => String(player.id) === String(route.playerId))) {
+      writeRouteState({ page: "home" }, true);
+      return;
+    }
+    writeRouteState(route, true);
+  }, []);
+
+  useEffect(() => {
+    function restoreRoute(event) {
+      const route = event.state?.fc27Route || getRouteState();
+      const isValidPage = APP_PAGES.has(route.page);
+      const requestedPage = isValidPage ? route.page : "home";
+      const nextPlayer = requestedPage === "player"
+        ? scoredPlayers.find((player) => String(player.id) === String(route.playerId)) || null
+        : null;
+      const nextPage = requestedPage === "player" && !nextPlayer ? "home" : requestedPage;
+
+      setPage(nextPage);
+      setReturnPage(route.returnPage || "players");
+      setSelectedPlayer(nextPlayer);
+    }
+
+    window.addEventListener("popstate", restoreRoute);
+    return () => window.removeEventListener("popstate", restoreRoute);
+  }, [scoredPlayers]);
 
   useLayoutEffect(() => {
     const root = document.documentElement;
@@ -147,15 +210,32 @@ function AppShell() {
   const overallOptions = useMemo(() => [...new Set(scoredPlayers.map((player) => Number(player.overall)).filter((rating) => Number.isFinite(rating) && rating >= 80))].sort((a, b) => a - b), [scoredPlayers]);
 
   function openPlayer(player) {
-    setReturnPage(page === "player" ? returnPage : page);
+    const nextReturnPage = page === "player" ? returnPage : page;
+    setReturnPage(nextReturnPage);
     setRecentPlayerIds((current) => [
       player.id,
       ...current.filter((id) => String(id) !== String(player.id)),
     ].slice(0, RECENT_PLAYER_LIMIT));
     setSelectedPlayer(player);
     setPage("player");
+    writeRouteState({ page: "player", playerId: player.id, returnPage: nextReturnPage });
   }
-  function goHome() { setPage("home"); setSelectedPlayer(null); }
+  function navigateToPage(nextPage) {
+    setPage(nextPage);
+    setSelectedPlayer(null);
+    if (nextPage !== page) writeRouteState({ page: nextPage });
+  }
+  function goHome() { navigateToPage("home"); }
+  function goBackFromPlayer() {
+    const previousPage = returnPage || "players";
+    if (window.history.length > 1 && page === "player") {
+      window.history.back();
+      return;
+    }
+    setPage(previousPage);
+    setSelectedPlayer(null);
+    writeRouteState({ page: previousPage }, true);
+  }
   function clearFilters() {
     setSearch(""); setPosition("All"); setTier("All"); setMinRating("0");
     setSortBy("meta-desc"); setLeagueFilter("All"); setClubFilter("All");
@@ -167,6 +247,7 @@ function AppShell() {
       return current.length >= 2 ? [current[1], player] : [...current, player];
     });
     setPage("compare"); setSelectedPlayer(null);
+    if (page !== "compare") writeRouteState({ page: "compare" });
   }
   function selectComparePlayer(index, player) {
     setComparePlayers((current) => {
@@ -191,19 +272,19 @@ function AppShell() {
           <div className="background-grid" />
           <div className="red-glow red-glow-one" />
           <div className="red-glow red-glow-two" />
-          <Navbar page={page === "player" ? returnPage : page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
+          <Navbar page={page === "player" ? returnPage : page} setPage={navigateToPage} onHome={goHome} />
 
         {page === "home" && <HomePage
           scoredPlayers={scoredPlayers}
           search={search}
           setSearch={setSearch}
-          onNavigate={setPage}
+          onNavigate={navigateToPage}
           onOpen={openPlayer}
           onCompare={addToCompare}
           favouritePlayers={favouritePlayers}
           recentPlayers={recentPlayers}
         />}
-        {page === "meta-score" && <MetaScorePage players={scoredPlayers} onNavigate={setPage} onOpen={openPlayer} onCompare={addToCompare} />}
+        {page === "meta-score" && <MetaScorePage players={scoredPlayers} onNavigate={navigateToPage} onOpen={openPlayer} onCompare={addToCompare} />}
         {page === "players" && <PlayersPage
           players={filteredPlayers} search={search} setSearch={setSearch}
           position={position} setPosition={setPosition} tier={tier} setTier={setTier}
@@ -222,7 +303,7 @@ function AppShell() {
         {page === "player" && selectedPlayer && <PlayerDetails
           player={selectedPlayer}
           backLabel={PAGE_LABELS[returnPage] || PAGE_LABELS.players}
-          onBack={() => { setPage(returnPage); setSelectedPlayer(null); }}
+          onBack={goBackFromPlayer}
           onCompare={addToCompare}
         />}
           <Footer />
