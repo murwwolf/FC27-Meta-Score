@@ -1,29 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SplashScreen() {
-  const continueButtonRef = useRef(null);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    if (!visible) return undefined;
-
     document.body.classList.add("fc27-splash-active");
-    const timer = window.setTimeout(() => setVisible(false), 10000);
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") setVisible(false);
-      if (event.key === "Tab") {
-        event.preventDefault();
-        continueButtonRef.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
+    const timer = window.setTimeout(() => {
+      document.body.classList.remove("fc27-splash-active");
+      setVisible(false);
+    }, 10000);
 
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("keydown", handleKeyDown);
       document.body.classList.remove("fc27-splash-active");
     };
-  }, [visible]);
+  }, []);
 
   if (!visible) return null;
 
@@ -39,9 +30,6 @@ export default function SplashScreen() {
         <div className="fc27-splash-loader" role="progressbar" aria-label="Loading FC27 META SCORE" aria-valuetext="Loading">
           <span />
         </div>
-        <button ref={continueButtonRef} type="button" className="fc27-splash-continue" autoFocus onClick={() => setVisible(false)}>
-          CONTINUE TO APP
-        </button>
       </div>
     </div>
   );
