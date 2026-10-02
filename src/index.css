@@ -3,7 +3,8 @@
 :root {
   font-family: "Inter", Arial, sans-serif;
   color: #ffffff;
-  background: #050608;
+  color-scheme: dark;
+  background: #08090b;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -13,13 +14,21 @@
 }
 
 html {
+  min-height: 100%;
+  background: #08090b;
   scroll-behavior: smooth;
+  overscroll-behavior-x: none;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
   background:
     radial-gradient(circle at 50% -10%, rgba(255, 215, 0, 0.09), transparent 32%),
     radial-gradient(circle at 10% 35%, rgba(220, 20, 45, 0.08), transparent 28%),
@@ -44,8 +53,10 @@ select {
 
 .app {
   min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
   background:
     radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.025), transparent 28%),
     linear-gradient(180deg, #07080b 0%, #050608 45%, #030405 100%);

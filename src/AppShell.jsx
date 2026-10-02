@@ -14,6 +14,8 @@ import PlayerDetails from "./components/PlayerDetails";
 import ComparePage from "./components/ComparePage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import SplashScreen from "./components/SplashScreen";
+import InstallHint from "./components/InstallHint";
 import {
   FAVOURITES_STORAGE_KEY,
   RECENT_PLAYER_LIMIT,
@@ -163,11 +165,14 @@ function AppShell() {
 
   return (
     <PlayerCollectionsProvider value={collectionContext}>
-      <div className="app">
-        <div className="background-grid" />
-        <div className="red-glow red-glow-one" />
-        <div className="red-glow red-glow-two" />
-        <Navbar page={page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
+      <>
+        <SplashScreen />
+        <InstallHint />
+        <div className="app">
+          <div className="background-grid" />
+          <div className="red-glow red-glow-one" />
+          <div className="red-glow red-glow-two" />
+          <Navbar page={page} setPage={(value) => { setPage(value); setSelectedPlayer(null); }} onHome={goHome} />
 
         {page === "home" && <HomePage
           scoredPlayers={scoredPlayers}
@@ -180,7 +185,6 @@ function AppShell() {
           recentPlayers={recentPlayers}
         />}
         {page === "meta-score" && <MetaScorePage players={scoredPlayers} onNavigate={setPage} onOpen={openPlayer} onCompare={addToCompare} />}
-
         {page === "players" && <PlayersPage
           players={filteredPlayers} search={search} setSearch={setSearch}
           position={position} setPosition={setPosition} tier={tier} setTier={setTier}
@@ -197,8 +201,9 @@ function AppShell() {
         {page === "rankings" && <RankingsPage players={scoredPlayers} onOpen={openPlayer} onCompare={addToCompare} />}
         {page === "compare" && <ComparePage players={comparePlayers} allPlayers={scoredPlayers} onSelect={selectComparePlayer} onRemove={removeComparePlayer} onSwap={swapComparePlayers} onReset={resetComparePlayers} onOpen={openPlayer} />}
         {page === "player" && selectedPlayer && <PlayerDetails player={selectedPlayer} onBack={() => { setPage("players"); setSelectedPlayer(null); }} onCompare={addToCompare} />}
-        <Footer />
-      </div>
+          <Footer />
+        </div>
+      </>
     </PlayerCollectionsProvider>
   );
 }

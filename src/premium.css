@@ -6,7 +6,9 @@
   --fc-gold: #ffd700;
 }
 
-body { min-width: 320px; background: var(--fc-bg); }
+html { background: var(--fc-bg); }
+body { min-width: 320px; min-height: 100vh; min-height: 100svh; min-height: 100dvh; background: var(--fc-bg); }
+#root, .app { min-height: 100vh; min-height: 100svh; min-height: 100dvh; }
 .app {
   overflow: clip;
   background: radial-gradient(ellipse at 50% -8%, rgba(180, 19, 34, 0.15), transparent 38%), linear-gradient(180deg, #0b0c0f 0%, #08090b 56%, #060709 100%);
@@ -25,6 +27,9 @@ body { min-width: 320px; background: var(--fc-bg); }
 .nav-links button.active { color: var(--fc-gold); }
 .nav-status { color: #b5b7bc; font-size: 9px; }
 .status-dot { background: #69c78d; box-shadow: 0 0 10px rgba(105, 199, 141, 0.55); }
+button, a, select, input[type="checkbox"], input[type="radio"] { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+button { -webkit-tap-highlight-color: transparent; }
+.player-card { -webkit-user-select: none; user-select: none; }
 
 .home-hero {
   max-width: 1380px;
@@ -1137,7 +1142,7 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
   .players-search-box input { height: 48px; font-size: 12px; }
   .players-mobile-filter-button { display: block; flex: 0 0 auto; min-height: 51px; padding: 0 13px; border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 5px; color: var(--fc-gold); background: rgba(255, 215, 0, 0.055); font-size: 9px; font-weight: 900; letter-spacing: 0.7px; }
   .players-filter-backdrop { position: fixed; z-index: 90; inset: 0; display: block; border: 0; background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(3px); }
-  .players-filter-panel { position: fixed; z-index: 91; top: 0; right: 0; bottom: 0; width: min(430px, calc(100vw - 24px)); max-height: 100dvh; margin: 0; padding: 20px 17px max(18px, env(safe-area-inset-bottom)); border-radius: 0; border-top: 0; border-left: 1px solid rgba(255, 215, 0, 0.25); overflow-y: auto; overscroll-behavior: contain; transform: translateX(105%); visibility: hidden; transition: transform 180ms ease, visibility 180ms ease; }
+  .players-filter-panel { position: fixed; z-index: 91; top: 0; right: 0; bottom: 0; width: min(430px, calc(100vw - 24px)); max-height: 100vh; max-height: 100svh; max-height: 100dvh; margin: 0; padding: max(20px, env(safe-area-inset-top, 0px)) 17px max(18px, env(safe-area-inset-bottom, 0px)); border-radius: 0; border-top: 0; border-left: 1px solid rgba(255, 215, 0, 0.25); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; transform: translateX(105%); visibility: hidden; transition: transform 180ms ease, visibility 180ms ease; }
   .players-filter-panel.is-open { transform: translateX(0); visibility: visible; }
   .players-filter-heading { align-items: flex-start; margin-bottom: 18px; }
   .players-filter-heading h2 { font-size: 27px; }
@@ -1529,6 +1534,7 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
   .app:has(.meta-explainer-page) .nav-links,
   .app:has(.meta-explainer-page) .nav-status { display: none; }
   .app:has(.meta-explainer-page) .navbar { min-height: calc(58px + env(safe-area-inset-top, 0px)); flex-wrap: nowrap; }
+  .navbar { padding-right: max(18px, env(safe-area-inset-right, 0px)); padding-left: max(18px, env(safe-area-inset-left, 0px)); }
   .meta-explainer-page { width: calc(100% - 32px); padding: 22px 0 50px; }
   .meta-explainer-hero { min-height: 335px; padding: 36px 20px; }
   .meta-explainer-hero h1 { font-size: clamp(35px, 10vw, 49px); }
@@ -1585,13 +1591,73 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
   .meta-position-tabs button, .meta-selected-position { animation: none; transition: none; }
 }
 
+body.fc27-splash-active { overflow: hidden; overscroll-behavior: none; }
+.fc27-splash {
+  position: fixed;
+  z-index: 999999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: max(24px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
+  color: #f4f4f5;
+  background: radial-gradient(ellipse at 50% 42%, rgba(176, 19, 38, 0.18), transparent 34%), radial-gradient(ellipse at 50% 58%, rgba(255, 215, 0, 0.07), transparent 50%), #08090b;
+  animation: fc27-splash-appear 260ms ease both;
+}
+.fc27-splash::before { position: absolute; inset: 18px; border: 1px solid rgba(255, 255, 255, 0.035); border-radius: 8px; content: ""; pointer-events: none; }
+.fc27-splash-glow { position: absolute; width: min(78vw, 430px); aspect-ratio: 1; border-radius: 50%; background: rgba(176, 19, 38, 0.13); filter: blur(80px); pointer-events: none; }
+.fc27-splash-content { position: relative; z-index: 1; display: grid; justify-items: center; width: min(100%, 420px); text-align: center; }
+.fc27-splash-logo { display: grid; width: clamp(180px, 58vw, 290px); aspect-ratio: 1.5; place-items: center; overflow: hidden; border: 1px solid rgba(255, 215, 0, 0.13); border-radius: 22px; background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), 0 0 60px rgba(195, 24, 43, 0.1); }
+.fc27-splash-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.fc27-splash-content h1 { margin: 25px 0 0; color: #f4e6a1; font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-size: clamp(26px, 7vw, 34px); font-weight: 900; letter-spacing: 2px; }
+.fc27-splash-content > p { margin: 8px 0 0; color: #9ea0a7; font-size: 9px; font-weight: 800; letter-spacing: 2.7px; }
+.fc27-splash-loader { width: min(180px, 60vw); height: 3px; margin-top: 34px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, 0.12); }
+.fc27-splash-loader span { display: block; width: 38%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #a7192a, #f0444e, #f0d76b); animation: fc27-splash-progress 1.15s ease-in-out infinite; }
+.fc27-splash-continue { min-height: 44px; margin-top: 30px; padding: 0 16px; border: 1px solid rgba(255, 215, 0, 0.22); border-radius: 4px; color: #e9d77d; background: rgba(255, 215, 0, 0.045); font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+.fc27-splash-continue:hover { border-color: rgba(255, 215, 0, 0.5); background: rgba(255, 215, 0, 0.09); }
+.fc27-splash-continue:focus-visible { outline: 2px solid #ffd700; outline-offset: 3px; }
+@keyframes fc27-splash-progress { from { transform: translateX(-120%); } to { transform: translateX(340%); } }
+@keyframes fc27-splash-appear { from { opacity: 0; } to { opacity: 1; } }
+
+.ios-install-hint {
+  position: fixed;
+  z-index: 110;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  left: max(16px, env(safe-area-inset-left, 0px));
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 12px;
+  width: min(520px, calc(100vw - 32px));
+  margin-inline: auto;
+  padding: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(27, 22, 18, 0.97), rgba(12, 13, 16, 0.98));
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.58), 0 0 26px rgba(177, 25, 42, 0.12);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  animation: fc27-splash-appear 220ms ease both;
+}
+.ios-install-hint-icon { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(255, 215, 0, 0.22); border-radius: 9px; color: #f0d76b; background: radial-gradient(circle at 50% 30%, rgba(176, 19, 38, 0.32), rgba(10, 11, 13, 0.95)); font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-size: 16px; font-weight: 900; }
+.ios-install-hint-copy { min-width: 0; }
+.ios-install-hint-copy strong { color: #f0d76b; font-size: 8px; font-weight: 900; letter-spacing: 0.8px; }
+.ios-install-hint-copy p { margin: 4px 0 0; color: #c4c6cb; font-size: 10px; line-height: 1.5; }
+.ios-install-hint-copy p span { color: #f0d76b; }
+.ios-install-hint > button { width: 44px; height: 44px; border-radius: 5px; color: #c4c6cb; background: rgba(255, 255, 255, 0.04); font-size: 24px; line-height: 1; }
+.ios-install-hint > button:hover { color: #fff; background: rgba(255, 255, 255, 0.09); }
+.ios-install-hint > button:focus-visible { outline: 2px solid #ffd700; outline-offset: 2px; }
+
 @media (max-width: 700px) {
   html, body, #root { width: 100%; overflow-x: clip; }
   .navbar {
     top: 0;
     height: auto;
     min-height: calc(58px + env(safe-area-inset-top, 0px));
-    padding: env(safe-area-inset-top, 0px) 18px 0;
+    padding: env(safe-area-inset-top, 0px) max(18px, env(safe-area-inset-right, 0px)) 0 max(18px, env(safe-area-inset-left, 0px));
   }
   .mobile-bottom-nav {
     position: fixed;
@@ -1602,7 +1668,7 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     min-height: calc(62px + env(safe-area-inset-bottom, 0px));
-    padding: 5px 10px calc(5px + env(safe-area-inset-bottom, 0px));
+    padding: 5px max(10px, env(safe-area-inset-right, 0px)) calc(5px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
     border-top: 1px solid rgba(255, 215, 0, 0.17);
     background: rgba(9, 10, 13, 0.94);
     box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.3);
@@ -1637,7 +1703,7 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
   .home-action-card { min-height: 112px; -webkit-tap-highlight-color: transparent; }
 
   .players-page, .rankings-page { width: calc(100% - 32px); }
-  .players-filter-panel { top: env(safe-area-inset-top, 0px); bottom: 0; z-index: 201; padding-top: max(20px, env(safe-area-inset-top, 0px)); }
+  .players-filter-panel { top: env(safe-area-inset-top, 0px); bottom: 0; z-index: 201; padding-top: max(20px, env(safe-area-inset-top, 0px)); -webkit-overflow-scrolling: touch; }
   .players-filter-backdrop { z-index: 200; }
   .players-filter-heading { gap: 8px; }
   .players-filter-close, .players-reset-button, .players-done-button, .players-mobile-filter-button { min-height: 44px; }
@@ -2220,7 +2286,7 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .app:has(.rankings-page) .nav-links,
   .app:has(.rankings-page) .nav-status {
     display: none;
@@ -3907,6 +3973,30 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
     color: var(--fc-gold);
     background: rgba(255, 215, 0, 0.07);
   }
+  .mobile-tools-menu button:active { border-color: rgba(255, 215, 0, 0.3); color: var(--fc-gold); background: rgba(255, 215, 0, 0.1); }
+  .mobile-tools-menu { z-index: 111; }
+  .ios-install-hint { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc27-splash, .fc27-splash-loader span, .ios-install-hint { animation: none; }
+}
+
+@media (min-width: 701px) and (max-width: 900px) {
+  .navbar { min-height: calc(58px + env(safe-area-inset-top, 0px)); height: auto; padding: env(safe-area-inset-top, 0px) max(18px, env(safe-area-inset-right, 0px)) 0 max(18px, env(safe-area-inset-left, 0px)); flex-wrap: nowrap; }
+  .nav-links, .nav-status { display: none; }
+  .mobile-bottom-nav { position: fixed; z-index: 100; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); min-height: calc(62px + env(safe-area-inset-bottom, 0px)); padding: 5px max(10px, env(safe-area-inset-right, 0px)) calc(5px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); border-top: 1px solid rgba(255, 215, 0, 0.17); background: rgba(9, 10, 13, 0.94); box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.3); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+  .mobile-bottom-nav button { display: flex; min-width: 0; min-height: 48px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 4px 2px; border-radius: 8px; color: #898c94; background: transparent; transition: color 150ms ease, background 150ms ease, transform 120ms ease; }
+  .mobile-bottom-nav button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .mobile-bottom-nav button span { font-size: 9px; font-weight: 800; letter-spacing: 0.15px; }
+  .mobile-bottom-nav button.active { color: var(--fc-gold); background: linear-gradient(180deg, rgba(255, 215, 0, 0.075), transparent); }
+  .mobile-bottom-nav button:focus-visible { outline: 2px solid var(--fc-gold); outline-offset: -2px; }
+  .app { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .mobile-tools-menu { position: fixed; z-index: 111; right: max(10px, env(safe-area-inset-right, 0px)); bottom: calc(72px + env(safe-area-inset-bottom, 0px)); display: grid; width: min(220px, calc(100vw - 20px)); max-height: calc(100vh - 90px); max-height: calc(100svh - 90px); max-height: calc(100dvh - 90px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; gap: 4px; padding: 7px; border: 1px solid rgba(255, 215, 0, 0.22); border-radius: 8px; background: rgba(12, 13, 16, 0.97); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.56), 0 0 28px rgba(255, 215, 0, 0.055); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+  .mobile-tools-menu button { min-height: 48px; padding: 0 12px; border: 1px solid transparent; border-radius: 5px; color: #d5d7dc; background: rgba(255, 255, 255, 0.025); font-size: 11px; font-weight: 800; text-align: left; }
+  .mobile-tools-menu button.active { border-color: rgba(255, 215, 0, 0.18); color: var(--fc-gold); background: rgba(255, 215, 0, 0.07); }
+  .mobile-tools-menu button:active { border-color: rgba(255, 215, 0, 0.3); color: var(--fc-gold); background: rgba(255, 215, 0, 0.1); }
+  .ios-install-hint { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
 }
 
 @media (max-width: 390px) {
@@ -4846,6 +4936,8 @@ footer { max-width: 1380px; border-color: var(--fc-line); }
 
   .player-share-dialog {
     width: min(520px, calc(100vw - 20px));
+    max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
+    max-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
     max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
     margin: auto 10px;
     border-radius: 9px;
