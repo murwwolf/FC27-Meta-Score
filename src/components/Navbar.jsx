@@ -1,6 +1,6 @@
 ﻿import { useState } from "react";
 
-function Navbar({ page, setPage, onHome }) {
+function Navbar({ page, setPage, onHome, onSignUp }) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const navItems = [
     ["home", "HOME"],
@@ -21,6 +21,7 @@ function Navbar({ page, setPage, onHome }) {
     ["favourites", "Favourites"],
     ["compare", "Compare"],
     ["meta-score", "Methodology"],
+    ["sign-up", "SIGN UP"],
   ];
   const toolsActive = ["meta-finder", "favourites", "compare", "meta-score"].includes(page);
 
@@ -64,6 +65,9 @@ function Navbar({ page, setPage, onHome }) {
           <span className="status-dot" />
           LIVE DATABASE
         </div>
+        <button className="signup-nav-button" type="button" onClick={onSignUp}>
+          SIGN UP
+        </button>
       </nav>
 
       <nav className="mobile-bottom-nav" aria-label="Primary navigation">
@@ -107,7 +111,14 @@ function Navbar({ page, setPage, onHome }) {
               type="button"
               className={page === value ? "active" : ""}
               aria-current={page === value ? "page" : undefined}
-              onClick={() => navigateTo(value)}
+              onClick={() => {
+                if (value === "sign-up") {
+                  setToolsOpen(false);
+                  onSignUp();
+                  return;
+                }
+                navigateTo(value);
+              }}
             >
               {label}
             </button>

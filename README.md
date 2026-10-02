@@ -1,4 +1,25 @@
-# React + Vite
+# FC27 Meta Score
+
+## Signup email service
+
+The signup form uses the Vercel serverless function in `api/signup.js`. Configure these
+private environment variables in the Vercel project before enabling signups:
+
+- `RESEND_API_KEY` — a Resend API key with permission to send mail.
+- `RESEND_FROM_EMAIL` — a sender address verified with Resend.
+- `UPSTASH_REDIS_REST_URL` — the Upstash Redis REST endpoint.
+- `UPSTASH_REDIS_REST_TOKEN` — the Upstash Redis REST token.
+- `SIGNUP_HASH_SECRET` — a private random secret of at least 32 bytes used to HMAC email addresses for duplicate detection.
+
+The API stores only an HMAC-SHA-256 fingerprint of each normalized email in Redis for duplicate
+detection; names are not retained. Welcome emails are sent by Resend and contain the
+confirmation text shown after successful signup. No private credentials belong in
+frontend environment variables.
+
+## Development
+
+Run `npm run dev` to start the Vite development server and `npm run build` to build the
+static frontend.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

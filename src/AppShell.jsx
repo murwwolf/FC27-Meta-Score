@@ -16,6 +16,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SplashScreen from "./components/SplashScreen";
 import InstallHint from "./components/InstallHint";
+import SignupModal from "./components/SignupModal";
 import {
   FAVOURITES_STORAGE_KEY,
   RECENT_PLAYER_LIMIT,
@@ -68,6 +69,9 @@ function writeRouteState(route, replace = false) {
 
 function AppShell() {
   const [page, setPage] = useState(() => getRouteState().page);
+  const [signUpOpen, setSignUpOpen] = useState(false);
+  const openSignUp = useCallback(() => setSignUpOpen(true), []);
+  const closeSignUp = useCallback(() => setSignUpOpen(false), []);
   const [returnPage, setReturnPage] = useState(() => getRouteState().returnPage || "players");
   const [search, setSearch] = useState("");
   const [position, setPosition] = useState("All");
@@ -272,7 +276,7 @@ function AppShell() {
           <div className="background-grid" />
           <div className="red-glow red-glow-one" />
           <div className="red-glow red-glow-two" />
-          <Navbar page={page === "player" ? returnPage : page} setPage={navigateToPage} onHome={goHome} />
+          <Navbar page={page === "player" ? returnPage : page} setPage={navigateToPage} onHome={goHome} onSignUp={openSignUp} />
 
         {page === "home" && <HomePage
           scoredPlayers={scoredPlayers}
@@ -307,6 +311,7 @@ function AppShell() {
           onCompare={addToCompare}
         />}
           <Footer />
+          {signUpOpen && <SignupModal onClose={closeSignUp} />}
         </div>
       </>
     </PlayerCollectionsProvider>
