@@ -8,7 +8,7 @@ export default function SplashScreen() {
     const timer = window.setTimeout(() => {
       document.body.classList.remove("fc27-splash-active");
       setVisible(false);
-    }, 10000);
+    }, 3000);
 
     return () => {
       window.clearTimeout(timer);
